@@ -9,7 +9,7 @@ namespace utils
     SDL_Surface* load_surface(std::string path);
     SDL_Texture* create_texture(SDL_Surface*);
 
-    SDL_Texture* create_texture(std::string path);
+    SDL_Texture* load_texture(std::string path);
 }
 
 #endif // INCLUDE_UTILS_TEXTURES_HPP

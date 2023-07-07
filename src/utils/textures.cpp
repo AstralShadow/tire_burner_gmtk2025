@@ -41,7 +41,7 @@ SDL_Texture* utils::create_texture(SDL_Surface* src)
 }
 
 
-SDL_Texture* utils::create_texture(std::string path)
+SDL_Texture* utils::load_texture(std::string path)
 {
     auto src = load_surface(path);
 
