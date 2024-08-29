@@ -44,10 +44,12 @@ void core::keydown(SDL_KeyboardEvent& ev, ...)
 #ifdef VERBOSE_UNHANDLED_EVENTS
     cout << "Unhandled keydown event." << endl;
 #endif
+#ifndef __EMSCRIPTEN__
     if(ev.keysym.sym == SDLK_q) {
         core::stop();
         cout << "Stopping because key is [Q]uit" << endl;
     }
+#endif
 }
 
 void core::keyup(SDL_KeyboardEvent&, ...)
