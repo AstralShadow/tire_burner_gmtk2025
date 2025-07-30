@@ -12,34 +12,42 @@ namespace startup
     Point gmtk_logo_size();
 
     extern SDL_Rect gmtk_logo_pos;
+    extern float gmtk_logo_opacity;
     extern u32 time;
+    extern int text_offset;
 
 
     /* Header */
-    const u32 text_enter_start = 250;
-    const u32 text_enter_end = 1250;
+    constexpr u32 text_enter_start = 250;
+    constexpr u32 text_enter_end = 1250;
 
-    const u32 text_exit_start = 5750;
-    const u32 text_exit_end = 6500;
+    constexpr u32 text_exit_start = 5750;
+    constexpr u32 text_exit_end = 6500;
 
 
     /* GMTK Logo */
-    const u32 enter_start = 1500;
-    const u32 enter_end = 2750;
+    constexpr u32 logo_distance = 64;
+    constexpr u32 enter_start = 1500;
+    constexpr u32 enter_end = 3250;
 
-    const u32 exit_start = 5250;
-    const u32 exit_end = 6500;
+    constexpr u32 exit_start = 5250;
+    constexpr u32 exit_end = 6500;
 
 
     /* Credits */
-    const u32 creds_enter_start = 2000;
-    const u32 creds_enter_end = 2500;
+    constexpr u32 creds_enter_start = 2000;
+    constexpr u32 creds_enter_end = 2500;
 
-    const u32 creds_exit_start = 5500;
-    const u32 creds_exit_end = 6000;
+    constexpr u32 creds_exit_start = 5500;
+    constexpr u32 creds_exit_end = 6500;
 
 
-    const u32 next_scene_t = 7500;
+    /* Background */
+    extern SDL_Color bg;
+    constexpr u32 background_hide_start = 6500;
+
+
+    constexpr u32 next_scene_t = 7000;
     const std::string next_scene = "menu";
 }
 

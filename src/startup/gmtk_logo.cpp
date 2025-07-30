@@ -23,6 +23,8 @@ static SDL_Texture* load_gmtk_logo()
     auto texture = create_texture(surface);
     SDL_FreeSurface(surface);
 
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
     return texture;
 }
 

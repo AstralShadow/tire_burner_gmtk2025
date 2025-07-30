@@ -17,7 +17,6 @@ static auto& rnd = core::renderer;
 
 void startup::render(scene_uid)
 {
-    SDL_Color bg {0x05, 0x12, 0x1a, 255};
     SDL_SetRenderDrawColor(rnd, bg.r, bg.g, bg.b, bg.a);
     SDL_RenderClear(rnd);
 
@@ -56,7 +55,7 @@ void startup::render(scene_uid)
 
                 auto screen = screen_size();
                 SDL_Rect dst {
-                    (screen.x - surf->w) / 2,
+                    (screen.x - surf->w) / 2 + text_offset - 40,
                     64,
                     surf->w, surf->h
                 };
@@ -123,7 +122,7 @@ void startup::render(scene_uid)
         if(texture) {
             auto screen = screen_size();
             SDL_Rect dst {
-                (screen.x - size.x) / 2,
+                static_cast<int>((screen.x - size.x) / 2 - text_offset * 0.8 + 20),
                 screen.y - size.y - 8,
                 size.x, size.y
             };
@@ -135,7 +134,25 @@ void startup::render(scene_uid)
 
     /* GMTK 2023 logo */
     auto logo = gmtk_logo();
+    SDL_SetTextureAlphaMod(logo, gmtk_logo_opacity * 255);
     SDL_RenderCopy(rnd, logo, nullptr, &gmtk_logo_pos);
+
+    SDL_SetTextureAlphaMod(logo, gmtk_logo_opacity * 127);
+    auto screen = screen_size();
+    int step = gmtk_logo_pos.w + logo_distance;
+    for(auto p = gmtk_logo_pos.x + step; p < screen.x; p += step)
+    {
+        auto pos = gmtk_logo_pos;
+        pos.x = p;
+        SDL_RenderCopy(rnd, logo, nullptr, &pos);
+    }
+
+    for(int p = gmtk_logo_pos.x - step; p + step > 0; p -= step)
+    {
+        auto pos = gmtk_logo_pos;
+        pos.x = p;
+        SDL_RenderCopy(rnd, logo, nullptr, &pos);
+    }
 
 
     SDL_RenderPresent(rnd);
