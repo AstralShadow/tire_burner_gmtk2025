@@ -1,4 +1,4 @@
-NAME=game
+NAME=todays_plan
 VERSION_MAJOR=0
 VERSION_MINOR=0
 
@@ -9,18 +9,18 @@ CONFIG = -D CORE_CONFIG \
 	-D PROJECT_NAME=\"${NAME}\"\
 	-D VERSION_MAJOR=${VERSION_MAJOR} \
 	-D VERSION_MINOR=${VERSION_MINOR} \
-	-D WINDOW_WIDTH=800 \
-	-D WINDOW_HEIGHT=600 \
+	-D WINDOW_WIDTH=1024 \
+	-D WINDOW_HEIGHT=720 \
 	-D VERBOSE_UNHANDLED_EVENTS \
-	#-D USE_SDL2_IMAGE \
+	-D USE_SDL2_IMAGE \
+	-D USE_SDL2_TTF \
 	#-D USE_SDL2_NET \
-	#-D USE_SDL2_TTF
 
 __CXXFLAGS=-Og -g -std=c++17 \
 	-Wall -Wextra -pedantic \
 	-lSDL2 \
-	#-lSDL2_image \
-	#-lSDL2_ttf \
+	-lSDL2_image \
+	-lSDL2_ttf \
 	#-lSDL2_mixer \
 	#-lSDL2_net \
 	#-pthread \
