@@ -24,6 +24,8 @@ namespace game
         float speed;
         Point size;
         size_t tires = 4;
+
+        size_t price;
     };
 
 

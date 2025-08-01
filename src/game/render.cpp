@@ -1,5 +1,6 @@
 #include "game/game.hpp"
 #include "game/data.hpp"
+#include "game/render.hpp"
 #include "core/core.hpp"
 #include "utils/pi.hpp"
 #include "utils/fonts.hpp"
@@ -15,6 +16,9 @@ using std::endl;
 
 
 static constexpr bool render_track_path = true;
+static constexpr SDL_Color stats_color {0, 0, 255, 255};
+static constexpr SDL_Color price_color {0, 200, 0, 255};
+static constexpr SDL_Color price_color_too_expensive {64, 64, 64, 255};
 
 
 static auto& rnd = core::renderer;
@@ -24,6 +28,8 @@ namespace game
     static void render_track();
     static void render_cars();
     static void render_stats();
+    static void render_buttons();
+    static size_t render_price(SDL_Rect area, string price, SDL_Color color);
 }
 
 void game::render(scene_uid)
@@ -34,6 +40,7 @@ void game::render(scene_uid)
     render_cars();
 
     render_stats();
+    render_buttons();
 
     SDL_RenderPresent(rnd);
 }
@@ -132,9 +139,8 @@ void game::render_stats()
         text += "Tested tires: " + format_number(tires, false) + " tires\n";
 
 
-    SDL_Color color {0, 0, 255, 255};
     auto font = get_font(FT_DEFAULT, 24);
-    auto surf = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), color, 0);
+    auto surf = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), stats_color, 0);
     if(!surf) {
         cout << "Failed to render text" << endl;
         cout << TTF_GetError() << endl;
@@ -150,4 +156,51 @@ void game::render_stats()
     SDL_RenderCopy(rnd, texture, nullptr, &dest);
 
     SDL_DestroyTexture(texture);
+}
+
+
+size_t game::render_price(SDL_Rect area, string price, SDL_Color color)
+{
+    auto font = get_font(FT_DEFAULT, 24);
+    auto surf = TTF_RenderUTF8_Blended_Wrapped(font, price.c_str(), color, 0);
+    if(!surf) {
+        cout << "Failed to render text" << endl;
+        cout << TTF_GetError() << endl;
+        return area.h + area.y + 10;
+    }
+    
+    auto texture = utils::create_texture(surf);
+    Point size { surf->w, surf->h };
+    SDL_FreeSurface(surf);
+
+    SDL_Rect dest {
+        area.x + (area.w - size.x) / 2,
+        area.y + area.h + 10,
+        size.x, size.y
+    };
+
+    SDL_RenderCopy(rnd, texture, nullptr, &dest);
+
+    SDL_DestroyTexture(texture);
+
+    return dest.y + dest.y + 10;
+}
+
+void game::render_buttons()
+{
+    SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
+    SDL_RenderDrawRect(rnd, &new_car1_button);
+
+    auto type = car_type(CAR_01);
+    SDL_Rect area {
+        new_car1_button.x + (new_car1_button.w - type.size.x) / 2,
+        new_car1_button.y + (new_car1_button.h - type.size.y) / 2,
+        type.size.x, type.size.y
+    };
+    SDL_RenderCopy(rnd, type.tex, nullptr, &area);
+
+    string price_tag = format_number(type.price, false) + " tires";
+    auto color = type.price > tires ? price_color_too_expensive : price_color;
+
+    area.y = render_price(area, price_tag, color);
 }
