@@ -19,6 +19,9 @@ namespace game
         CarEnum type;
         float pos = 0;
         size_t laps = 0;
+
+        float offset = 0;
+        float target_offset = 0;
     };
 
     extern vector<Car> cars;

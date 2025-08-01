@@ -26,7 +26,7 @@ static constexpr std::array<const char*, game::TRACK_LAST> _paths
 static std::array<game::Track, game::TRACK_LAST> _tracks;
 
 
-static vector<FPoint> parse_path(fs::path);
+static vector<FPoint> parse_path(game::Track&, fs::path);
 static std::pair<float, vector<float>> get_length(vector<FPoint> const&);
 
 
@@ -37,20 +37,21 @@ game::Track& game::track(TrackEnum index)
 
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
-    _tracks[index].path = parse_path(_paths[index]);
+    _tracks[index].path = parse_path(_tracks[index], _paths[index]);
     auto len = get_length(_tracks[index].path);
     _tracks[index].lap_len = len.first;
-    _tracks[index].path_lens= std::move(len.second);
+    _tracks[index].path_lens = std::move(len.second);
 
     cout << "Track " << index << " image: " << _textures[index] << endl;
-    cout << "Track " << index << " poitns: " << _tracks[index].path.size() << endl;
+    cout << "Track " << index << " points: " << _tracks[index].path.size() << endl;
+    cout << "Track " << index <<  " width: " << _tracks[index].path_width << endl;
     cout << "Track " << index <<  " length: " << _tracks[index].lap_len << endl;
 
     return _tracks[index];
 }
 
 
-vector<FPoint> parse_path(fs::path path)
+vector<FPoint> parse_path(game::Track& track, fs::path path)
 {
     vector<FPoint> points;
 
@@ -98,6 +99,13 @@ vector<FPoint> parse_path(fs::path path)
                 points.push_back(pos);
             }
 
+            continue;
+        }
+
+        if(type == "TRACK_WIDTH") {
+            float width;
+            line >> width;
+            track.path_width = width;
             continue;
         }
 

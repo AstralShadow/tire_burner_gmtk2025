@@ -75,7 +75,12 @@ void game::render_cars()
         delta.x *= progress;
         delta.y *= progress;
 
-        FPoint center = p1 + delta;
+        FPoint offset_delta {
+            car.offset * cos(rotation),
+            car.offset * sin(rotation)
+        };
+
+        FPoint center = p1 + delta + offset_delta;
 
         SDL_Rect dest {
             static_cast<int>(center.x) - type.size.x / 2,
