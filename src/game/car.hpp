@@ -1,5 +1,5 @@
 #pragma once
-#include "utils/types.hpp"
+#include "utils/point.hpp"
 #include <string>
 #include <array>
 
@@ -21,6 +21,7 @@ namespace game
     struct CarType
     {
         SDL_Texture* tex = nullptr;
+        Point size;
     };
 
 

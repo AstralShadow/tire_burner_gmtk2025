@@ -24,9 +24,12 @@ game::CarType& game::car_type(CarEnum index)
     if(_cars[index].tex != nullptr)
         return _cars[index];
 
-    cout << "Loading car image: " << _textures[index];
 
-    _cars[index].tex = utils::load_texture(_textures[index]);
+    cout << "Loading car image: " << _textures[index];
+    auto surface = utils::load_surface(_textures[index]);
+    _cars[index].tex = utils::create_texture(surface);
+    _cars[index].size = {surface->w, surface->h};
+    SDL_FreeSurface(surface);
 
     return _cars[index];
 }

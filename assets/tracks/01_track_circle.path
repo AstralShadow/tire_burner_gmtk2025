@@ -1,2 +1,3 @@
 # ARC cente.x center.y  p1.x p1.y  radius (degree)
-ARC  512 360  271 360  360
+ARC  512 360  271 360  359
+
