@@ -23,6 +23,7 @@ namespace game
         SDL_Texture* tex = nullptr;
         float speed;
         Point size;
+        size_t tires = 4;
     };
 
 

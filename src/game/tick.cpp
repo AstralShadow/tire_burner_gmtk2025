@@ -12,6 +12,8 @@ void game::tick(u32 ms, scene_uid)
         if(car.pos > track.lap_len) {
             car.pos -= track.lap_len;
             car.laps++;
+            if(car.laps % track.loops_per_tire_change == 0)
+                tires += type.tires;
         }
 
 

@@ -29,6 +29,8 @@ namespace game
 
         vector<float> path_lens;
         float path_width = 0;
+
+        size_t loops_per_tire_change;
     };
 
 

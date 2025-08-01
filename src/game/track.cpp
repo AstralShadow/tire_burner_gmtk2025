@@ -109,6 +109,13 @@ vector<FPoint> parse_path(game::Track& track, fs::path path)
             continue;
         }
 
+        if(type == "TIRE_CHANGE_LOOPS") {
+            size_t loops;
+            line >> loops;
+            track.loops_per_tire_change = loops;
+            continue;
+        }
+
         cout << "Unknown path instruction: " << _line << endl;
     }
 

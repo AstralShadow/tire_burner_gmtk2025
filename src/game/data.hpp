@@ -25,4 +25,7 @@ namespace game
     };
 
     extern vector<Car> cars;
+
+
+    extern size_t tires;
 };

@@ -2,8 +2,12 @@
 #include "game/data.hpp"
 #include "core/core.hpp"
 #include "utils/pi.hpp"
+#include "utils/fonts.hpp"
+#include "utils/textures.hpp"
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 #include <algorithm>
+#include <format>
 #include <iostream>
 
 using std::cout;
@@ -19,6 +23,7 @@ namespace game
 {
     static void render_track();
     static void render_cars();
+    static void render_stats();
 }
 
 void game::render(scene_uid)
@@ -26,8 +31,9 @@ void game::render(scene_uid)
     SDL_RenderClear(rnd);
 
     render_track();
-
     render_cars();
+
+    render_stats();
 
     SDL_RenderPresent(rnd);
 }
@@ -91,4 +97,57 @@ void game::render_cars()
 
         SDL_RenderCopyEx(rnd, type.tex, nullptr, &dest, degrees, nullptr, SDL_FLIP_NONE);
     }
+}
+
+
+static string format_number(double number, bool floating = true)
+{
+    if(number < 1000 && floating)
+        return std::format("{:.2f}", number);
+    else if(number < 1000 && !floating)
+        return std::format("{:.0f}", number);
+    else if (number < 1000 * 1000)
+        return std::format("{:.3f}K", number / 1000);
+    else if (number < 1000 * 1000 * 1000)
+        return std::format("{:.3f}M", number / 1000000);
+    else
+        return std::format("{:.2e}", number);
+}
+
+void game::render_stats()
+{
+    constexpr float px_to_meter = 0.06;
+
+    double mileage = 0;
+    double laps = 0;
+    for(auto& car : cars) {
+        auto const& track = game::track(car.track);
+        mileage += track.lap_len * px_to_meter * car.laps + car.pos * px_to_meter;
+        laps += car.laps + car.pos / track.lap_len;
+    }
+
+    string text = "Mileage: " + format_number(mileage) + "m\n";
+    text += "Loops: " + format_number(laps) + " laps\n";
+    if(tires > 0)
+        text += "Tested tires: " + format_number(tires, false) + " tires\n";
+
+
+    SDL_Color color {0, 0, 255, 255};
+    auto font = get_font(FT_DEFAULT, 24);
+    auto surf = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), color, 0);
+    if(!surf) {
+        cout << "Failed to render text" << endl;
+        cout << TTF_GetError() << endl;
+        return;
+    }
+
+    auto texture = utils::create_texture(surf);
+    Point size { surf->w, surf->h };
+    SDL_FreeSurface(surf);
+
+    SDL_Rect dest { 10, 10, size.x, size.y };
+
+    SDL_RenderCopy(rnd, texture, nullptr, &dest);
+
+    SDL_DestroyTexture(texture);
 }
