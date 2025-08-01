@@ -1,4 +1,4 @@
-NAME=todays_plan
+NAME=tire_burner
 VERSION_MAJOR=0
 VERSION_MINOR=0
 
