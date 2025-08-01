@@ -27,7 +27,7 @@ static std::array<game::Track, game::TRACK_LAST> _tracks;
 
 
 static vector<FPoint> parse_path(fs::path);
-static float get_length(vector<FPoint> const&);
+static std::pair<float, vector<float>> get_length(vector<FPoint> const&);
 
 
 game::Track& game::track(TrackEnum index)
@@ -38,7 +38,9 @@ game::Track& game::track(TrackEnum index)
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
     _tracks[index].path = parse_path(_paths[index]);
-    _tracks[index].lap_len = get_length(_tracks[index].path);
+    auto len = get_length(_tracks[index].path);
+    _tracks[index].lap_len = len.first;
+    _tracks[index].path_lens= std::move(len.second);
 
     cout << "Track " << index << " image: " << _textures[index] << endl;
     cout << "Track " << index << " poitns: " << _tracks[index].path.size() << endl;
@@ -83,7 +85,7 @@ vector<FPoint> parse_path(fs::path path)
             auto radius = std::sqrt(d.x * d.x + d.y * d.y);
             auto a1 = atan2(d.y, d.x);
 
-            size_t count = radius * radians / 15 + 2;
+            size_t count = radius * radians / 5 + 2;
 
             for(size_t i = 0; i <= count; i++) {
                 float angle = a1 + radians * i / count;
@@ -105,9 +107,10 @@ vector<FPoint> parse_path(fs::path path)
     return points;
 }
 
-float get_length(vector<FPoint> const& path)
+std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
 {
     float len = 0;
+    vector<float> lens;
 
     for(size_t i = 0; i < path.size(); i++) {
         FPoint p1 = path[i % path.size()];
@@ -115,8 +118,9 @@ float get_length(vector<FPoint> const& path)
 
         FPoint d = p1 - p2;
         len += std::sqrt(d.x * d.x + d.y * d.y);
-        
+
+        lens.push_back(len);
     }
 
-    return len;
+    return {len, lens};
 }

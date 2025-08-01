@@ -18,6 +18,7 @@ namespace game
         TrackEnum track;
         CarEnum type;
         float pos = 0;
+        size_t laps = 0;
     };
 
     extern vector<Car> cars;

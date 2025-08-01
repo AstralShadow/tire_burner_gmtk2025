@@ -21,6 +21,7 @@ namespace game
     struct CarType
     {
         SDL_Texture* tex = nullptr;
+        float speed;
         Point size;
     };
 

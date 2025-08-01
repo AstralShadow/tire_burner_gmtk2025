@@ -26,6 +26,7 @@ namespace game
         SDL_Texture* tex = nullptr;
         vector<FPoint> path;
         float lap_len;
+        vector<float> path_lens;
     };
 
 

@@ -14,6 +14,11 @@ static constexpr std::array<const char*, game::CAR_LAST> _textures
     PATH_BASE "car1.png",
 };
 
+static constexpr std::array<float, game::CAR_LAST> _speed // px/s
+{
+    250
+};
+
 #undef PATH_BASE
 
 static std::array<game::CarType, game::CAR_LAST> _cars;
@@ -30,6 +35,8 @@ game::CarType& game::car_type(CarEnum index)
     _cars[index].tex = utils::create_texture(surface);
     _cars[index].size = {surface->w, surface->h};
     SDL_FreeSurface(surface);
+
+    _cars[index].speed = _speed[index];
 
     return _cars[index];
 }
