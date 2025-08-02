@@ -8,7 +8,7 @@ using std::array;
 
 
 TrackEnum game::current_track = TRACK_01;
-TrackEnum game::unlocked_end = static_cast<TrackEnum>(current_track + 1);
+TrackEnum game::unlocked_tracks_end = static_cast<TrackEnum>(TRACK_01 + 1);
 
 vector<Car> game::cars;
 

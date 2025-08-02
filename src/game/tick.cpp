@@ -86,7 +86,7 @@ void game::move_cars(u32 ms)
 
 void game::prevent_crashes(u32 ms)
 {
-    for(size_t track_id = current_track; track_id < unlocked_end; track_id++) {
+    for(size_t track_id = current_track; track_id < unlocked_tracks_end; track_id++) {
         vector<float> pos;
         vector<float> e_pos;
 

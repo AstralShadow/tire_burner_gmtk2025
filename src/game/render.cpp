@@ -350,11 +350,11 @@ void game::render_track_buttons()
 
         // TODO render icon
 
-        string tag = (i == 0 ? "Previous track" : "Next track");
+        string tag = (i == 0 ? "Prev track" : "Next track");
 
         auto color = prev_map_tag_color;
 
-        if(i == 1 && current_track + 1 == unlocked_end) {
+        if(i == 1 && current_track + 1 == unlocked_tracks_end) {
             auto const& track = game::track(static_cast<TrackEnum>(current_track + 1));
             tag = format_number(track.price, false) + " tires";
 

@@ -3,6 +3,17 @@
 #include "game/render.hpp"
 #include <SDL2/SDL_events.h>
 #include <algorithm>
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+
+namespace game
+{
+    static bool new_car_button_click_hdl(Point);
+    static bool track_button_click_hdl(Point);
+}
 
 
 void game::mouseup(SDL_MouseButtonEvent&, scene_uid)
@@ -12,13 +23,20 @@ void game::mouseup(SDL_MouseButtonEvent&, scene_uid)
 void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
 {
     Point pos { ev.x, ev.y };
+    if(new_car_button_click_hdl(pos))
+        return;
+    if(track_button_click_hdl(pos))
+        return;
+}
 
+bool game::new_car_button_click_hdl(Point pos)
+{
     for(size_t i = 0; i < car_types_per_track; i++) {
         if(!SDL_PointInRect(&pos, &new_car_buttons[i]))
             continue;
 
         if(new_car_timeouts[i] > 0)
-            return;
+            return true;
 
 
         auto const& track = game::track(current_track);
@@ -33,7 +51,7 @@ void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
         bool has_to_scrap = car_count >= max_cars;
 
         if(has_to_scrap && type_count[i] == 0)
-            return;
+            return true;
 
         if(has_to_scrap) {
             auto itr = std::find_if(
@@ -50,7 +68,7 @@ void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
             if(!(cars.empty() && i == 0) && tires >= game::car_type(car_type).price) {
                 tires -= game::car_type(car_type).price;
             } else if(!(cars.empty() && i == 0)) {
-                return;
+                return true;
             }
 
             cars.push_back(Car {
@@ -60,6 +78,43 @@ void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
         }
 
         new_car_timeouts[i] = new_car_timeout;
+        return true;
     }
+
+    return false;
 }
 
+bool game::track_button_click_hdl(Point pos)
+{
+    if(SDL_PointInRect(&pos, &map_buttons[0])) {
+        if(current_track == 0)
+            return true;
+        current_track = static_cast<TrackEnum>(current_track - 1);
+        return true;
+    }
+
+    if(SDL_PointInRect(&pos, &map_buttons[1])) {
+        if(current_track >= TRACK_LAST - 1)
+            return true;
+
+        auto next = static_cast<TrackEnum>(current_track + 1);
+
+        if(next < unlocked_tracks_end) {
+            current_track = next;
+            return true;
+        }
+
+        auto price = track(next).price;
+        if(price > tires)
+            return true;
+
+        tires -= price;
+
+        current_track = unlocked_tracks_end;
+        unlocked_tracks_end = static_cast<TrackEnum>(unlocked_tracks_end + 1);
+
+        return true;
+    }
+
+    return false;
+}
