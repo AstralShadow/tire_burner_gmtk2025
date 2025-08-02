@@ -41,7 +41,7 @@ void game::move_cars(u32 ms)
         auto const& type = car_type(car.type);
         auto const& track = game::track(car.track);
 
-        car.pos += (1 - car.stopped) * type.speed * ms / 1000.0f;
+        car.pos += (1 - car.stopped) * (car.burning_tires ? 0.85 : 1) * type.speed * ms / 1000.0f;
 
         if(car.on_entrance && car.pos > track.entrance_len) {
             car.stashed_mileage = track.entrance_len;
@@ -58,6 +58,10 @@ void game::move_cars(u32 ms)
             tires += type.tires;
             car.converted_meters_into_tires += type.meters_per_tire_change;
             spawn_profit_particle(car_pos(car), type.tires);
+
+            car.burning_tires = false;
+        } else if(type.meters_per_tire_change * 0.9 < delta) {
+            car.burning_tires = true;
         }
 
 
@@ -73,6 +77,10 @@ void game::move_cars(u32 ms)
             car.offset += (1 - car.stopped) * ms * type.speed / (75 * 1000.0f);
         if(off_delta < 0)
             car.offset -= (1 - car.stopped) * ms * type.speed / (75 * 1000.0f);
+
+        float next_off_delta = car.target_offset - car.offset;
+        if((off_delta < 0 && next_off_delta > 0) || (off_delta > 0 && next_off_delta < 0))
+            car.offset = car.target_offset;
     }
 }
 

@@ -33,6 +33,8 @@ namespace game
         float stashed_mileage = 0; // in pixels
 
         double converted_meters_into_tires = 0; // how much of the mileage was converted into tires
+
+        bool burning_tires = false;
     };
 
     extern vector<Car> cars;

@@ -142,8 +142,8 @@ void game::render_cars()
             type.size.x, type.size.y
         };
 
-
-        SDL_RenderCopyEx(rnd, type.tex, nullptr, &dest, degrees, nullptr, SDL_FLIP_NONE);
+        bool burning = car.burning_tires && car.stopped < 0.6;
+        SDL_RenderCopyEx(rnd, burning ? type.tex2 : type.tex, nullptr, &dest, degrees, nullptr, SDL_FLIP_NONE);
     }
 }
 
@@ -308,7 +308,7 @@ void game::render_profit_particles()
         auto size_itr = texture_sizes.find(p.tires);
         if(itr == textures.end()) {
             auto font = get_font(FT_DEFAULT, 24);
-            auto text = std::format("+{} tires!", p.tires);
+            auto text = std::format("{} tires!", p.tires);
             auto surf = TTF_RenderUTF8_Blended(font, text.c_str(), profit_particle_color);
             if(!surf) {
                 cout << "Failed to render text" << endl;
