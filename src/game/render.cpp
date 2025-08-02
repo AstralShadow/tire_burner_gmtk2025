@@ -131,6 +131,9 @@ FPoint game::car_pos(Car const& car, float* _rotation)
 void game::render_cars()
 {
     for(auto& car : cars) {
+        if(car.track != current_track)
+            continue;
+
         auto const& type = car_type(car.type);
 
         float rotation;
