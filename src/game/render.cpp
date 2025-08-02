@@ -522,12 +522,12 @@ void game::render_track_buttons()
 
 
         string final_stats = std::format(
-            "Total tires: {}\nTime played: {:.2f}s\nThanks for playing!",
-            total_tires,
+            "Total tires: {:.1e}\nTime played: {:.0f}s\n\nThanks for playing!",
+            total_tires * 1.0,
             (SDL_GetTicks() - start_time) / 1000.0
         );
 
-        auto font = get_font(FT_DEFAULT, 20);
+        auto font = get_font(FT_DEFAULT, 18);
         auto surface = TTF_RenderUTF8_Blended_Wrapped(font, final_stats.c_str(), car_info_color, 0);
         if(!surface) {
             cout << "Failed to render text" << endl;
