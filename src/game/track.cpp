@@ -17,19 +17,21 @@ static constexpr std::array<const char*, game::TRACK_LAST> _textures
 {
     PATH_BASE "01_track_circle.png",
     PATH_BASE "02_track_bean.png",
+    PATH_BASE "03_track_lines.png",
 };
 
 static constexpr std::array<const char*, game::TRACK_LAST> _paths
 {
     PATH_BASE "01_track_circle.path",
     PATH_BASE "02_track_bean.path",
+    PATH_BASE "03_track_lines.path",
 };
 
 static constexpr std::array<size_t, game::TRACK_LAST> _prices
 {
     0,
+    300,
     500,
-    // 500, // TODO balance
 };
 
 #undef PATH_BASE

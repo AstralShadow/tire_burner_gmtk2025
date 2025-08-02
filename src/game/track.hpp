@@ -17,6 +17,7 @@ namespace game
     {
         TRACK_01,
         TRACK_02,
+        TRACK_03,
 
         TRACK_LAST
     };
