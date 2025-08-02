@@ -16,6 +16,7 @@ namespace game
     enum TrackEnum
     {
         TRACK_01,
+        TRACK_02,
 
         TRACK_LAST
     };
@@ -42,6 +43,10 @@ namespace game
 
 
         size_t loops_per_tire_change;
+        size_t max_cars;
+
+
+        size_t price;
     };
 
 

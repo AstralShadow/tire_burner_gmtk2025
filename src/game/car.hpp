@@ -37,9 +37,10 @@ namespace game
         SDL_Texture* tex2 = nullptr; // upgraded
         float speed;
         Point size;
-        size_t tires = 4;
+        size_t tires;
 
         size_t price;
+        size_t meters_per_tire_change;
     };
 
 

@@ -24,9 +24,6 @@ static constexpr bool render_debug_lines = true;
 static constexpr bool render_track_path = render_debug_lines;
 static constexpr bool render_button_area = render_debug_lines;
 
-static constexpr SDL_Color stats_color {0, 0, 0, 255};
-static constexpr SDL_Color price_color {0, 255, 0, 255};
-static constexpr SDL_Color price_color_too_expensive {255, 0, 0, 255};
 
 
 static auto& rnd = core::renderer;
@@ -35,9 +32,11 @@ namespace game
 {
     static void render_track();
     static void render_cars();
+
+    static void render_track_overlay();
     static void render_stats();
     static void render_buttons();
-    static size_t render_price(SDL_Rect area, string price, SDL_Color color);
+    static void render_price(SDL_Rect area, string const& price, SDL_Color color);
 }
 
 void game::render(scene_uid)
@@ -47,6 +46,7 @@ void game::render(scene_uid)
     render_track();
     render_cars();
 
+    render_track_overlay();
     render_stats();
     render_buttons();
 
@@ -129,6 +129,13 @@ void game::render_cars()
 }
 
 
+void game::render_track_overlay()
+{
+    static auto texture = utils::load_texture(menu_track_overlay);
+    SDL_RenderCopy(rnd, texture, nullptr, nullptr);
+}
+
+
 static string format_number(double number, bool floating = true)
 {
     if(number < 1000 && floating)
@@ -152,7 +159,7 @@ void game::render_stats()
     for(auto& car : cars) {
         auto const& track = game::track(car.track);
         mileage += track.lap_len * px_to_meter * car.laps + car.pos * px_to_meter;
-        mileage += car.stashed_mileage;
+        mileage += car.stashed_mileage * px_to_meter;
         if(!car.on_entrance)
             laps += car.laps + car.pos / track.lap_len;
     }
@@ -161,7 +168,7 @@ void game::render_stats()
     text += "Mileage: " + format_number(mileage, false) + "m\n";
     text += "Loops: " + format_number(laps) + "\n";
     if(tires > 0)
-        text += "Tested:\n" + format_number(tires, false) + " tires\n";
+        text += "Burned: " + format_number(tires, false) + " tires\n";
 
 
     auto font = get_font(FT_DEFAULT, 24);
@@ -184,14 +191,14 @@ void game::render_stats()
 }
 
 
-size_t game::render_price(SDL_Rect area, string price, SDL_Color color)
+void game::render_price(SDL_Rect area, string const& price, SDL_Color color)
 {
     auto font = get_font(FT_DEFAULT, 24);
     auto surf = TTF_RenderUTF8_Blended_Wrapped(font, price.c_str(), color, 0);
     if(!surf) {
         cout << "Failed to render text" << endl;
         cout << TTF_GetError() << endl;
-        return area.h + area.y + 10;
+        return;
     }
     
     auto texture = utils::create_texture(surf);
@@ -207,27 +214,62 @@ size_t game::render_price(SDL_Rect area, string price, SDL_Color color)
     SDL_RenderCopy(rnd, texture, nullptr, &dest);
 
     SDL_DestroyTexture(texture);
-
-    return dest.y + dest.y + 10;
 }
 
 void game::render_buttons()
 {
-    if(render_button_area) {
-        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
-        SDL_RenderDrawRect(rnd, &new_car_button);
+    auto const& track = game::track(current_track);
+    size_t car_count = 0, max_cars = track.max_cars;
+    array<size_t, car_types_per_track> type_count {};
+    for(auto const& car : cars)
+        if(car.track == current_track) {
+            car_count++;
+            type_count[car.type % car_types_per_track]++;
+        }
+
+    bool has_to_scrap = car_count >= max_cars;
+
+    for(size_t i = 0; i < car_types_per_track; i++) {
+        auto new_car_button = new_car_buttons[i];
+        if(new_car_timeouts[i] > 0) {
+            SDL_SetRenderDrawColor(rnd, 64, 64, 64, 255);
+            auto area = new_car_button;
+            area.y += area.h;
+            area.h = (area.h * new_car_timeouts[i] * 1.0f / new_car_timeout);
+            area.y -= area.h;
+            SDL_RenderFillRect(rnd, &area);
+        }
+
+        if(render_button_area) {
+            SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
+            SDL_RenderDrawRect(rnd, &new_car_button);
+        }
+
+        auto type = car_type(static_cast<CarEnum>(i + car_types_per_track * current_track));
+        SDL_Rect area {
+            new_car_button.x + new_car_button_icon.x + (new_car_button_icon.w - type.size.x) / 2,
+            new_car_button.y + new_car_button_icon.y + (new_car_button_icon.h - type.size.y) / 2,
+            type.size.x, type.size.y
+        };
+        SDL_RenderCopyEx(rnd, type.tex, nullptr, &area, 90, nullptr, SDL_FLIP_NONE);
+
+        string price_tag = format_number(type.price, false) + " tires";
+
+        bool free = cars.empty() && i == 0;
+
+        if(free) {
+            render_price(new_car_button, "Free", price_color);
+        } else if(!has_to_scrap) {
+            auto color = type.price > tires ? price_color_too_expensive : price_color;
+
+            render_price(new_car_button, price_tag, color);
+        } else {
+            static const string scrap_tag = "Scrap";
+
+            if(type_count[i] > 0)
+                render_price(new_car_button, scrap_tag, scrap_color);
+            else
+                render_price(new_car_button, price_tag, price_color_no_space);
+        }
     }
-
-    auto type = car_type(CAR_01);
-    SDL_Rect area {
-        new_car_button_icon.x + (new_car_button_icon.w - type.size.x) / 2,
-        new_car_button_icon.y + (new_car_button_icon.h - type.size.y) / 2,
-        type.size.x, type.size.y
-    };
-    SDL_RenderCopyEx(rnd, type.tex, nullptr, &area, 90, nullptr, SDL_FLIP_NONE);
-
-    string price_tag = format_number(type.price, false) + " tires";
-    auto color = type.price > tires ? price_color_too_expensive : price_color;
-
-    area.y = render_price(new_car_button, price_tag, color);
 }

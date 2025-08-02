@@ -1,5 +1,6 @@
 #include "game/game.hpp"
 #include "game/data.hpp"
+#include "game/render.hpp"
 #include "utils/trandom.hpp"
 #include <algorithm>
 #include <format>
@@ -20,6 +21,7 @@ namespace game
 {
     static void move_cars(u32 ms);
     static void prevent_crashes(u32 ms);
+    static void decrease_timeouts(u32 ms);
 }
 
 
@@ -27,6 +29,7 @@ void game::tick(u32 ms, scene_uid)
 {
     move_cars(ms);
     prevent_crashes(ms);
+    decrease_timeouts(ms);
 }
 
 
@@ -199,5 +202,15 @@ void game::prevent_crashes(u32 ms)
             if(car.stopped > 1)
                 car.stopped = 1;
         }
+    }
+}
+
+void game::decrease_timeouts(u32 ms)
+{
+    for(auto& timeout : new_car_timeouts) {
+        if(timeout <= ms)
+            timeout = 0;
+        else
+            timeout -= ms;
     }
 }

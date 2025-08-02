@@ -15,11 +15,20 @@ using std::endl;
 static constexpr std::array<const char*, game::TRACK_LAST> _textures
 {
     PATH_BASE "01_track_circle.png",
+    PATH_BASE "02_track_long.png",
 };
 
 static constexpr std::array<const char*, game::TRACK_LAST> _paths
 {
     PATH_BASE "01_track_circle.path",
+    PATH_BASE "02_track_long.path",
+};
+
+static constexpr std::array<size_t, game::TRACK_LAST> _prices
+{
+    0,
+    500,
+    // 500, // TODO balance
 };
 
 #undef PATH_BASE
@@ -38,8 +47,11 @@ game::Track& game::track(TrackEnum index)
 
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
+    _tracks[index].price = _prices[index];
+
     parse_path(_tracks[index], _paths[index]);
     calculate_lengths(_tracks[index]);
+
 
     cout << "Track " << index << " image: " << _textures[index] << endl;
     cout << "Track " << index << " points: " << _tracks[index].path.size() << endl;
@@ -128,6 +140,13 @@ void parse_path(game::Track& track, fs::path path)
             float num;
             line >> num;
             track.entrance_path_overlap = num;
+            continue;
+        }
+
+        if(type == "MAX_CAR_COUNT") {
+            size_t num;
+            line >> num;
+            track.max_cars = num;
             continue;
         }
 

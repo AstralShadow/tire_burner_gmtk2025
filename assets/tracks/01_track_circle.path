@@ -1,5 +1,10 @@
 # Name: Track 1
 
+# Loops per tire change
+TIRE_CHANGE_LOOPS 2
+
+MAX_CAR_COUNT 8
+
 
 ENTRANCE_BEGIN
 
@@ -20,6 +25,3 @@ PATH_END
 
 # Track Width
 TRACK_WIDTH 125
-
-# Loops per tire change
-TIRE_CHANGE_LOOPS 2

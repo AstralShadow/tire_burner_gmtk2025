@@ -10,6 +10,7 @@ using std::vector;
 namespace game
 {
     constexpr float px_to_meter = 0.06;
+    constexpr size_t car_types_per_track = 4; // define buttons in render.hpp
 
 
     extern TrackEnum current_track;

@@ -27,16 +27,30 @@ static constexpr std::array<std::pair<const char*, const char*>, game::CAR_LAST>
 
 static constexpr std::array<float, game::CAR_LAST> _speed // px/s
 {
-    250, 260, 255, 265,
-    350, 370, 360, 380,
-    510, 530, 550, 570,
+    230, 245, 265, 280,
+    330, 350, 370, 400,
+    510, 530, 550, 570
 };
 
 static constexpr std::array<size_t, game::CAR_LAST> _price // px/s
 {
-    10, 10, 10, 10,
+    7, 15, 31, 64,
     25, 25, 25, 25,
-    100, 100, 100, 100,
+    100, 100, 100, 100
+};
+
+static constexpr std::array<size_t, game::CAR_LAST> _tires
+{
+    4, 4, 4, 4,
+    4, 4, 4, 4,
+    4, 4, 4, 4
+};
+
+static constexpr std::array<size_t, game::CAR_LAST> _meters_per_tire_change
+{
+    200, 180, 155, 130,
+    100, 100, 100, 100, // TODO balance
+    100, 100, 100, 100
 };
 
 #undef PATH_BASE
@@ -65,6 +79,8 @@ game::CarType& game::car_type(CarEnum index)
 
     _cars[index].speed = _speed[index];
     _cars[index].price = _price[index];
+    _cars[index].tires = _tires[index];
+    _cars[index].meters_per_tire_change = _meters_per_tire_change[index];
 
     return _cars[index];
 }
