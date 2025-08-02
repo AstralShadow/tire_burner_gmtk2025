@@ -160,7 +160,7 @@ void game::render_stats()
     text += "Mileage: " + format_number(mileage, false) + "m\n";
     text += "Loops: " + format_number(laps) + "\n";
     if(tires > 0)
-        text += "\nTested: " + format_number(tires, false) + " tires\n";
+        text += "Tested:\n" + format_number(tires, false) + " tires\n";
 
 
     auto font = get_font(FT_DEFAULT, 24);
