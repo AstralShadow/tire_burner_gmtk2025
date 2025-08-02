@@ -357,14 +357,23 @@ void game::render_track_buttons()
             SDL_RenderDrawRect(rnd, area_ptr);
         }
 
-        // TODO render icon
+        auto const& track = game::track(static_cast<TrackEnum>(current_track + (i ? 1 : -1)));
+
+        auto icon = track.icon;
+        SDL_Rect icon_area {
+            area_ptr->x + map_button_icon.x,
+            area_ptr->y + map_button_icon.y,
+            map_button_icon.w, map_button_icon.h
+        };
+
+        SDL_RenderCopy(rnd, icon, nullptr, &icon_area);
+
 
         string tag = (i == 0 ? "Prev track" : "Next track");
 
         auto color = prev_map_tag_color;
 
         if(i == 1 && current_track + 1 == unlocked_tracks_end) {
-            auto const& track = game::track(static_cast<TrackEnum>(current_track + 1));
             tag = format_number(track.price, false) + " tires";
 
             color = track.price <= tires ? price_color : price_color_too_expensive;

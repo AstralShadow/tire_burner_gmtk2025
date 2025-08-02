@@ -29,6 +29,10 @@ namespace game
         {855, 486, 140, 94},
         {855, 590, 140, 94}
     };
+    constexpr SDL_Rect map_button_icon {
+        38, 10,
+        64, 48
+    };
 
 
     struct TireProfitParticle
