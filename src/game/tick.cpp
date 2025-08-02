@@ -57,7 +57,7 @@ void game::move_cars(u32 ms)
         if(type.meters_per_tire_change < delta) {
             tires += type.tires;
             car.converted_meters_into_tires += type.meters_per_tire_change;
-            spawn_profit_particle(car_pos(car), type.tires);
+            spawn_profit_particle(car_pos(car), type.tires, car.track);
 
             car.burning_tires = false;
         } else if(type.meters_per_tire_change * 0.9 < delta) {

@@ -43,7 +43,7 @@ namespace game
         static constexpr float speed = 60.0f; // px/s
     };
     extern vector<TireProfitParticle> tire_profit_particles;
-    void spawn_profit_particle(FPoint pos, size_t tires);
+    void spawn_profit_particle(FPoint pos, size_t tires, TrackEnum track);
 
 
     constexpr SDL_Color stats_color {255, 255, 255, 255};
@@ -52,6 +52,7 @@ namespace game
     constexpr SDL_Color price_color_no_space {32, 32, 32, 255};
     constexpr SDL_Color scrap_color {255, 255, 0, 255};
     constexpr SDL_Color profit_particle_color {255, 255, 255, 255};
+    constexpr SDL_Color profit_particle_color_hidden {48, 48, 48, 255};
 
     constexpr SDL_Color prev_map_tag_color {255, 255, 255, 255};
 

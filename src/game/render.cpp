@@ -218,19 +218,25 @@ void game::render_stats()
 void game::render_profit_particles()
 {
     // Cached by tires count
-    static std::map<size_t, SDL_Texture*> textures;
-    static std::map<size_t, Point> texture_sizes;
+    static std::map<size_t, SDL_Texture*> white_textures;
+    static std::map<size_t, Point> white_texture_sizes;
+
+    // Gray version for ones from another track (hidden ones)
+    static std::map<size_t, SDL_Texture*> gray_textures;
+    static std::map<size_t, Point> gray_texture_sizes;
 
     for(auto p : tire_profit_particles) {
-        if(p.track != current_track)
-            continue;
+        bool same_track = p.track == current_track;
+        auto& textures = same_track ? white_textures : gray_textures;
+        auto& texture_sizes = same_track ? white_texture_sizes : white_texture_sizes;
 
         auto itr = textures.find(p.tires);
         auto size_itr = texture_sizes.find(p.tires);
         if(itr == textures.end()) {
             auto font = get_font(FT_DEFAULT, 24);
             auto text = std::format("{} tires!", p.tires);
-            auto surf = TTF_RenderUTF8_Blended(font, text.c_str(), profit_particle_color);
+            auto color = same_track ? profit_particle_color : profit_particle_color_hidden;
+            auto surf = TTF_RenderUTF8_Blended(font, text.c_str(), color);
             if(!surf) {
                 cout << "Failed to render text" << endl;
                 cout << TTF_GetError() << endl;
