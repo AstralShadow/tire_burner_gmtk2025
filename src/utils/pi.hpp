@@ -3,12 +3,12 @@
 
 #include <cmath>
 
-constexpr double pi()
+inline double pi()
 {
     return std::atan2(0.0, -1.0);
 }
 
-constexpr float pi_f()
+inline float pi_f()
 {
     return std::atan2(0.0f, -1.0f);
 }
