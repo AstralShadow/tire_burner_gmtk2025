@@ -3,6 +3,7 @@
 #include "utils/textures.hpp"
 #include "utils/pi.hpp"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 using std::cerr;
@@ -15,13 +16,13 @@ using std::endl;
 static constexpr std::array<const char*, game::TRACK_LAST> _textures
 {
     PATH_BASE "01_track_circle.png",
-    PATH_BASE "02_track_long.png",
+    PATH_BASE "02_track_bean.png",
 };
 
 static constexpr std::array<const char*, game::TRACK_LAST> _paths
 {
     PATH_BASE "01_track_circle.path",
-    PATH_BASE "02_track_long.path",
+    PATH_BASE "02_track_bean.path",
 };
 
 static constexpr std::array<size_t, game::TRACK_LAST> _prices
