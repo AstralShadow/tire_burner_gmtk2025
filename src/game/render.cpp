@@ -184,7 +184,9 @@ void game::render_stats()
 
     double mileage = deleted_mileage;
     double laps = deleted_laps;
-    std::map<TrackEnum, size_t> cars_on_tracks;
+    static std::map<TrackEnum, size_t> cars_on_tracks;
+    cars_on_tracks.clear();
+
     for(auto& car : game::cars) {
         auto itr = cars_on_tracks.find(car.track);
         if(itr == cars_on_tracks.end())

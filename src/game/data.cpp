@@ -44,6 +44,9 @@ vector<TireProfitParticle> game::tire_profit_particles;
 
 void game::spawn_profit_particle(FPoint pos, size_t tires, TrackEnum track)
 {
+    if(tire_profit_particles.size() >= 100)
+        return;
+
     struct RNGToken;
 
     tire_profit_particles.push_back({

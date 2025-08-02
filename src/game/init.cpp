@@ -1,5 +1,6 @@
 #include "game/game.hpp"
 #include "game/data.hpp"
+#include "game/render.hpp"
 #include <iostream>
 
 using std::cout;
@@ -14,6 +15,9 @@ void game::init(int, char**, scene_uid)
 
     for(size_t i = 0; i < TRACK_LAST; i++)
         track(static_cast<TrackEnum>(i));
+
+    tire_profit_particles.reserve(100);
+    cars.reserve(50);
 
 #ifndef __EMSCRIPTEN__
     //tires = 5000;
