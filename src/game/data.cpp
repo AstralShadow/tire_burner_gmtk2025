@@ -18,9 +18,19 @@ size_t game::tires = 0;
 size_t game::total_tires = false;
 
 
-extern bool game::discovered_car_limit = false;
-extern bool game::discovered_scrap_option = false;
-extern bool game::scrap_mode = false;
+bool game::discovered_car_limit = false;
+bool game::discovered_scrap_option = false;
+bool game::scrap_mode = false;
+
+
+double game::deleted_mileage = 0;
+double game::deleted_laps = 0;
+size_t game::deleted_cars = 0;
+
+
+array<size_t, TRACK_LAST> game::spent_tires_at_purchase {
+    0, 0, 0, 0
+};
 
 
 array<u32, car_types_per_track> game::new_car_timeouts {0, 0, 0, 0};

@@ -64,13 +64,20 @@ bool game::new_car_button_click_hdl(Point pos)
                     return car.track == current_track && (car.type % car_types_per_track == i);
                 }
             );
-            cars.erase(itr);
+            if(itr != cars.end()) {
+                auto track = game::track(itr->track);
+                deleted_cars++;
+                deleted_mileage = itr->laps * track.lap_len + itr->pos + itr->stashed_mileage;
+                deleted_laps = itr->laps;
 
-            discovered_car_limit = true;
-            discovered_scrap_option = true;
+                cars.erase(itr);
 
-            if(cars.size() == 1)
-                scrap_mode = false;
+                discovered_car_limit = true;
+                discovered_scrap_option = true;
+
+                if(cars.size() == 1)
+                    scrap_mode = false;
+            }
         } else {
             auto car_type = static_cast<CarEnum>(i + current_track * car_types_per_track);
             if(!(cars.empty() && i == 0) && tires >= game::car_type(car_type).price) {
@@ -134,6 +141,7 @@ bool game::track_button_click_hdl(Point pos)
             return true;
 
         tires -= price;
+        spent_tires_at_purchase[current_track] = total_tires - tires;
 
         current_track = unlocked_tracks_end;
         unlocked_tracks_end = static_cast<TrackEnum>(unlocked_tracks_end + 1);

@@ -180,10 +180,10 @@ void game::render_stats()
 {
     constexpr Point pos {21, 27};
 
-    double mileage = 0;
-    double laps = 0;
+    double mileage = deleted_mileage;
+    double laps = deleted_laps;
     std::map<TrackEnum, size_t> cars_on_tracks;
-    for(auto& car : cars) {
+    for(auto& car : game::cars) {
         auto itr = cars_on_tracks.find(car.track);
         if(itr == cars_on_tracks.end())
             cars_on_tracks[car.track] = 1;
@@ -208,7 +208,7 @@ void game::render_stats()
     if(cars.empty())
         cars = "0";
 
-    string text = "Cars: " + cars + "\n";
+    string text = "Cars: " + cars + (deleted_cars > 0 ? std::format("[/{}]\n", game::cars.size() + deleted_cars) : "\n");
     if(mileage > 0.0)
         text += "Mileage: " + format_number(mileage, false) + "m\n";
     if(laps > 1.0)
@@ -324,9 +324,10 @@ void game::render_car_buttons()
     for(size_t i = 0; i < car_types_per_track; i++) {
         auto new_car_button = new_car_buttons[i];
 
+        auto expense = spent_tires_at_purchase[current_track];
         auto enum_type = static_cast<CarEnum>(i + car_types_per_track * current_track);
         auto const& type = car_type(enum_type);
-        if(type.price > total_tires && enum_type != CAR_01)
+        if(type.price > total_tires - expense && enum_type != CAR_01)
             continue;
 
         if(new_car_timeouts[i] > 0) {
@@ -351,7 +352,7 @@ void game::render_car_buttons()
         };
         SDL_RenderCopyEx(rnd, type.tex, nullptr, &area, 90, nullptr, SDL_FLIP_NONE);
 
-        string price_tag = format_number(type.price, false) + (discovered_tires ? " tires" : " sth");
+        string price_tag = format_number(type.price, false) + (discovered_tires ? " tires" : " things");
 
         bool free = cars.empty() && i == 0;
 
@@ -411,16 +412,17 @@ void game::render_track_buttons()
         if(i == 1 && current_track == TRACK_LAST - 1)
             continue;
 
+
+        auto const& track = game::track(static_cast<TrackEnum>(current_track + (i ? 1 : -1)));
+        if(i == 1 && track.price > total_tires)
+            continue;
+
         auto const* area_ptr = &map_buttons[i];
 
         if(render_button_area) {
             SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
             SDL_RenderDrawRect(rnd, area_ptr);
         }
-
-        auto const& track = game::track(static_cast<TrackEnum>(current_track + (i ? 1 : -1)));
-        if(i == 1 && track.price > total_tires)
-            continue;
 
         auto icon = track.icon;
         SDL_Rect icon_area {

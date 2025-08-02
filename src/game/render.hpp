@@ -25,8 +25,8 @@ namespace game
     };
 
 
-    constexpr SDL_Rect scrap_toggle_button { 855, 412, 144, 58 };
-    constexpr SDL_Rect scrap_toggle_top_label { 855, 412, 144, 24 };
+    constexpr SDL_Rect scrap_toggle_button { 855, 418, 144, 58 };
+    constexpr SDL_Rect scrap_toggle_top_label { 855, 418, 144, 24 };
 
 
     constexpr array<SDL_Rect, 2> map_buttons { SDL_Rect

@@ -48,4 +48,10 @@ namespace game
     extern bool discovered_car_limit;
     extern bool discovered_scrap_option;
     extern bool scrap_mode;
-};
+
+    extern double deleted_mileage;
+    extern double deleted_laps;
+    extern size_t deleted_cars;
+
+    extern std::array<size_t, TRACK_LAST> spent_tires_at_purchase;
+}
