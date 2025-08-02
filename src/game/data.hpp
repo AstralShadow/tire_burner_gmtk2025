@@ -44,4 +44,8 @@ namespace game
     extern size_t total_tires;
     extern size_t tires;
     extern bool discovered_tires;
+
+    extern bool discovered_car_limit;
+    extern bool discovered_scrap_option;
+    extern bool scrap_mode;
 };

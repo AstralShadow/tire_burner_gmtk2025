@@ -25,6 +25,10 @@ namespace game
     };
 
 
+    constexpr SDL_Rect scrap_toggle_button { 855, 412, 144, 58 };
+    constexpr SDL_Rect scrap_toggle_top_label { 855, 412, 144, 24 };
+
+
     constexpr array<SDL_Rect, 2> map_buttons { SDL_Rect
         {855, 486, 140, 94},
         {855, 590, 140, 94}
@@ -59,6 +63,10 @@ namespace game
     constexpr SDL_Color profit_particle_color_hidden {48, 48, 48, 255};
 
     constexpr SDL_Color prev_map_tag_color {255, 255, 255, 255};
+
+    constexpr SDL_Color car_limit_color {255, 255, 255, 255};
+    constexpr SDL_Color scrap_enabled_color {255, 255, 0, 255};
+    constexpr SDL_Color scrap_disabled_color {32, 32, 32, 255};
 
     constexpr auto menu_track_overlay = "assets/menu/track_overlay.png";
 }

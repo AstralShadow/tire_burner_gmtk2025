@@ -12,6 +12,7 @@ using std::endl;
 namespace game
 {
     static bool new_car_button_click_hdl(Point);
+    static bool scrap_button_click_hdl(Point);
     static bool track_button_click_hdl(Point);
 }
 
@@ -26,6 +27,8 @@ void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
     if(new_car_button_click_hdl(pos))
         return;
     if(track_button_click_hdl(pos))
+        return;
+    if(scrap_button_click_hdl(pos))
         return;
 }
 
@@ -48,7 +51,7 @@ bool game::new_car_button_click_hdl(Point pos)
                 type_count[car.type % car_types_per_track]++;
             }
 
-        bool has_to_scrap = car_count >= max_cars;
+        bool has_to_scrap = (scrap_mode && !cars.empty()) || car_count >= max_cars;
 
         if(has_to_scrap && type_count[i] == 0)
             return true;
@@ -63,6 +66,11 @@ bool game::new_car_button_click_hdl(Point pos)
             );
             cars.erase(itr);
 
+            discovered_car_limit = true;
+            discovered_scrap_option = true;
+
+            if(cars.size() == 1)
+                scrap_mode = false;
         } else {
             auto car_type = static_cast<CarEnum>(i + current_track * car_types_per_track);
             if(!(cars.empty() && i == 0) && tires >= game::car_type(car_type).price) {
@@ -75,6 +83,9 @@ bool game::new_car_button_click_hdl(Point pos)
                 .track = current_track,
                 .type = static_cast<CarEnum>(i + current_track * car_types_per_track)
             });
+
+            if(car_count == max_cars - 2)
+                discovered_car_limit = true;
         }
 
         new_car_timeouts[i] = new_car_timeout;
@@ -82,6 +93,20 @@ bool game::new_car_button_click_hdl(Point pos)
     }
 
     return false;
+}
+
+bool game::scrap_button_click_hdl(Point pos)
+{
+    if(!SDL_PointInRect(&pos, &scrap_toggle_button))
+        return false;
+
+    if(discovered_scrap_option)
+        scrap_mode = !scrap_mode;
+
+    if(cars.size() == 1 && scrap_mode)
+        scrap_mode = false;
+
+    return true;
 }
 
 bool game::track_button_click_hdl(Point pos)

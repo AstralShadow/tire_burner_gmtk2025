@@ -38,6 +38,7 @@ namespace game
     static void render_track_overlay();
     static void render_stats();
     static void render_car_buttons();
+    static void render_scrap_button();
     static void render_track_buttons();
     static void render_price(SDL_Rect area, string const& price, SDL_Color color);
 
@@ -54,6 +55,7 @@ void game::render(scene_uid)
     render_track_overlay();
     render_stats();
     render_car_buttons();
+    render_scrap_button();
     render_track_buttons();
 
     render_profit_particles();
@@ -317,7 +319,7 @@ void game::render_car_buttons()
             type_count[car.type % car_types_per_track]++;
         }
 
-    bool has_to_scrap = car_count >= max_cars;
+    bool has_to_scrap = car_count >= max_cars || (scrap_mode && cars.size() > 1);
 
     for(size_t i = 0; i < car_types_per_track; i++) {
         auto new_car_button = new_car_buttons[i];
@@ -367,6 +369,37 @@ void game::render_car_buttons()
             else
                 render_price(new_car_button, price_tag, price_color_no_space);
         }
+    }
+}
+
+void game::render_scrap_button()
+{
+    if(!discovered_car_limit)
+        return;
+
+    if(render_button_area) {
+        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
+        SDL_RenderDrawRect(rnd, &scrap_toggle_button);
+    }
+
+    size_t count = 0;
+    for(auto const& c : cars)
+        if(c.track == current_track)
+            count++;
+
+    size_t cap = track(current_track).max_cars;
+
+    if(discovered_car_limit)
+        render_price(scrap_toggle_top_label, std::format("{}/{} cars", count, cap), car_limit_color);
+
+    if(discovered_scrap_option) {
+        auto color = scrap_mode ? scrap_enabled_color : scrap_disabled_color;
+        auto text = scrap_mode ? "SCRAP!" : "scrap?";
+        if(cars.size() == 1) {
+            text = "no scrap!";
+            color = scrap_disabled_color;
+        }
+        render_price(scrap_toggle_button, text, color);
     }
 }
 

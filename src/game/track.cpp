@@ -41,7 +41,7 @@ static constexpr std::array<const char*, game::TRACK_LAST> _paths
 static constexpr std::array<size_t, game::TRACK_LAST> _prices
 {
     0,
-    300,
+    100,
     500,
     700
 };
