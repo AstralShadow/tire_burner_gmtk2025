@@ -23,6 +23,8 @@ namespace game
 
         float offset = 0;
         float target_offset = 0;
+
+        float stopped = 0.0f; // 1 - fully stopped
     };
 
     extern vector<Car> cars;

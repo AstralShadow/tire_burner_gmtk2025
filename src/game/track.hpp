@@ -27,7 +27,7 @@ namespace game
 
 
         vector<FPoint> path;
-        float lap_len;
+        float lap_len; // TODO rename to path_len
         vector<float> path_lens;
 
         float path_width = 0;
@@ -38,6 +38,7 @@ namespace game
         vector<float> entrance_lens;
 
         static constexpr float entrance_width = 0;
+        float entrance_path_overlap = 0; // for traffic control
 
 
         size_t loops_per_tire_change;

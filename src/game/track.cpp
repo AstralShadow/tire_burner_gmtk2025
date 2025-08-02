@@ -115,10 +115,19 @@ void parse_path(game::Track& track, fs::path path)
             section = TS_ENTRANCE;
             continue;
         }
+
         if(type == "ENTRANCE_END") {
             if(section != TS_ENTRANCE)
                 cerr << "Error in " << path << ": ENTRANCE_END but not in entrance section!" << endl;
             section = TS_NONE;
+            continue;
+        }
+
+
+        if(type == "ENTRANCE_PATH_OVERLAP") {
+            float num;
+            line >> num;
+            track.entrance_path_overlap = num;
             continue;
         }
 

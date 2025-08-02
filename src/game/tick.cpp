@@ -1,15 +1,43 @@
 #include "game/game.hpp"
 #include "game/data.hpp"
 #include "utils/trandom.hpp"
+#include <algorithm>
+#include <format>
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+
+#ifdef __EMSCRIPTEN__
+static constexpr bool debug_log = false;
+#else
+static constexpr bool debug_log = true;
+#endif
+
+
+namespace game
+{
+    static void move_cars(u32 ms);
+    static void prevent_crashes(u32 ms);
+}
 
 
 void game::tick(u32 ms, scene_uid)
+{
+    move_cars(ms);
+    prevent_crashes(ms);
+}
+
+
+void game::move_cars(u32 ms)
 {
     for(auto& car : cars) {
         auto const& type = car_type(car.type);
         auto const& track = game::track(car.track);
 
-        car.pos += type.speed * ms / 1000.0f;
+        car.pos += (1 - car.stopped) * type.speed * ms / 1000.0f;
+
         if(car.on_entrance && car.pos > track.entrance_len) {
             // TODO stash in the path?
 
@@ -32,8 +60,146 @@ void game::tick(u32 ms, scene_uid)
 
         float off_delta = car.target_offset - car.offset;
         if(off_delta > 0)
-            car.offset += ms * type.speed / (75 * 1000.0f);
+            car.offset += (1 - car.stopped) * ms * type.speed / (75 * 1000.0f);
         if(off_delta < 0)
-            car.offset -= ms * type.speed / (75 * 1000.0f);
+            car.offset -= (1 - car.stopped) * ms * type.speed / (75 * 1000.0f);
+    }
+}
+
+void game::prevent_crashes(u32 ms)
+{
+    for(size_t track_id = current_track; track_id < unlocked_end; track_id++) {
+        vector<float> pos;
+        vector<float> e_pos;
+
+        for(auto& car : cars) {
+            if(car.track != track_id)
+                continue;
+
+            auto const& track = game::track(car.track);
+            auto const& type = game::car_type(car.type);
+
+            if(car.on_entrance) {
+                // Position on entrance
+                float relative = car.pos - type.size.y / 2;
+                if(relative < 0)
+                    relative += track.lap_len;
+                e_pos.push_back(relative);
+
+                // Position on track
+                relative = car.pos - track.entrance_len;
+                float overlap = track.entrance_path_overlap + type.size.y * 1.5;
+                if(-relative < overlap) {
+                    relative += track.lap_len;
+                    pos.push_back(relative);
+                }
+            } else {
+                // Position on track
+                float relative = car.pos - type.size.y / 2;
+                if(relative < 0)
+                    relative += track.lap_len;
+                pos.push_back(relative);
+
+                // Position on entrance
+                relative = car.pos - type.size.y / 2 + track.entrance_len;
+                auto overlap = track.entrance_path_overlap + type.size.y;
+                if(car.pos - type.size.y / 2 > track.lap_len - overlap)
+                    relative = track.entrance_len - track.entrance_path_overlap;
+                e_pos.push_back(relative);
+            }
+        }
+
+        std::sort(pos.begin(), pos.end());
+        std::sort(e_pos.begin(), e_pos.end());
+
+        if(debug_log) {
+            cout << endl << "track: " << track_id << endl;
+
+            /*
+            cout << "pos: ";
+            for(auto p : pos)
+                cout << p << ' ';
+            cout << endl;
+            */
+
+            cout << "e_pos: ";
+            for(auto p : e_pos)
+                cout << std::format("{:5.1f}", p) << ' ';
+            cout << endl;
+        }
+
+
+        for(auto& car : cars) {
+            if(car.track != track_id)
+                continue;
+
+            auto const& track = game::track(car.track);
+            auto const& type = game::car_type(car.type);
+
+            float back = car.pos - type.size.y / 2 + 1; // +1 to skip self
+            float nose = car.pos + type.size.y / 2;
+            cout << std::format("nose: {:5.1f} back: {:5.1f}", nose, back) << endl;
+
+            auto const& close_by = car.on_entrance ? e_pos : pos;
+            auto next = std::lower_bound(close_by.begin(), close_by.end(), back);
+
+            float car_len = type.size.y;
+            float target_distance = car_len * 1.5;
+
+            bool should_wait = false;
+            bool hard_stop = false;
+
+            if(next != close_by.end()) {
+                if(*next < nose + type.speed / 10) {
+                    should_wait = true;
+                    if(*next < nose + 10)
+                        hard_stop = true;
+                }
+
+                if(*next - nose < target_distance)
+                    should_wait = true;
+
+                if(car.on_entrance) {
+                    float relative = car.pos - track.entrance_len;
+                    float overlap = track.entrance_path_overlap + type.size.y;
+                    if(-relative < overlap) {
+                        should_wait = false;
+                        hard_stop = false;
+                    }
+                }
+            }
+
+            if(!car.on_entrance) {
+                back -= track.lap_len;
+                nose -= track.lap_len;
+                next = std::lower_bound(close_by.begin(), close_by.end(), back);
+
+                if(next != close_by.end()) {
+                    if(*next < nose + type.speed / 10) {
+                        should_wait = true;
+                        if(*next < nose + 10)
+                            hard_stop = true;
+                    }
+
+                    if(*next - nose < target_distance)
+                        should_wait = true;
+                }
+            }
+
+            if(hard_stop)
+                if(car.stopped < 0.9)
+                    car.stopped = 0.9;
+
+            if(should_wait)
+                car.stopped += type.speed * ms / (1000.0f * 100);
+            else
+                car.stopped -= type.speed * ms / (1000.0f * 200);
+
+            if(car.stopped < 0)
+                car.stopped = 0;
+
+            if(car.stopped > 1)
+                car.stopped = 1;
+        }
     }
 }
