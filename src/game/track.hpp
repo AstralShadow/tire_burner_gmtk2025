@@ -26,6 +26,7 @@ namespace game
     struct Track
     {
         SDL_Texture* tex = nullptr;
+        SDL_Texture* icon = nullptr;
 
 
         vector<FPoint> path;

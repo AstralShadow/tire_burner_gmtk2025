@@ -76,19 +76,33 @@ game::CarType& game::car_type(CarEnum index)
         << " textures: " << _textures[index].first
         << " " << _textures[index].second << endl;
 
-    auto surface = utils::load_surface(_textures[index].first);
-    _cars[index].tex = utils::create_texture(surface);
-    _cars[index].size = {surface->w, surface->h};
-    SDL_FreeSurface(surface);
-
-    surface = utils::load_surface(_textures[index].second);
-    _cars[index].tex2 = utils::create_texture(surface);
-    SDL_FreeSurface(surface);
-
     _cars[index].speed = _speed[index];
     _cars[index].price = _price[index];
     _cars[index].tires = _tires[index];
     _cars[index].meters_per_tire_change = _meters_per_tire_change[index];
+
+
+    auto surface = utils::load_surface(_textures[index].second);
+    if(!surface) {
+        cout << "Failed to load surface: " << endl;
+        cout << _textures[index].first << endl;
+        return _cars[index];
+    }
+    _cars[index].tex2 = utils::create_texture(surface);
+    SDL_FreeSurface(surface);
+
+
+    surface = utils::load_surface(_textures[index].first);
+    if(!surface) {
+        cout << "Failed to load surface: " << endl;
+        cout << _textures[index].first << endl;
+        return _cars[index];
+    }
+
+    _cars[index].tex = utils::create_texture(surface);
+    _cars[index].size = Point {surface->w, surface->h};
+    SDL_FreeSurface(surface);
+
 
     return _cars[index];
 }

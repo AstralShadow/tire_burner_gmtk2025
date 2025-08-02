@@ -20,6 +20,14 @@ static constexpr std::array<const char*, game::TRACK_LAST> _textures
     PATH_BASE "03_track_lines.png",
 };
 
+static constexpr std::array<const char*, game::TRACK_LAST> _icons
+{
+    PATH_BASE "01_track_circle_icon.png",
+    PATH_BASE "02_track_bean_icon.png",
+    PATH_BASE "03_track_lines_icon.png",
+};
+
+
 static constexpr std::array<const char*, game::TRACK_LAST> _paths
 {
     PATH_BASE "01_track_circle.path",
@@ -51,16 +59,27 @@ game::Track& game::track(TrackEnum index)
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
     SDL_SetTextureBlendMode(_tracks[index].tex, SDL_BLENDMODE_NONE);
-    _tracks[index].price = _prices[index];
 
     parse_path(_tracks[index], _paths[index]);
     calculate_lengths(_tracks[index]);
 
+    _tracks[index].price = _prices[index];
 
     cout << "Track " << index << " image: " << _textures[index] << endl;
     cout << "Track " << index << " points: " << _tracks[index].path.size() << endl;
     cout << "Track " << index <<  " width: " << _tracks[index].path_width << endl;
     cout << "Track " << index <<  " length: " << _tracks[index].lap_len << endl;
+    cout << "Track " << index << " icon: " << _icons[index] << endl;
+
+    auto surf = utils::load_surface(_icons[index]);
+    if(!surf) {
+        cout << "Failed to load texture" << endl;
+        cout << _icons[index] << endl;
+        return _tracks[index];
+    }
+    _tracks[index].icon = utils::create_texture(surf);
+    SDL_FreeSurface(surf);
+
 
     return _tracks[index];
 }
