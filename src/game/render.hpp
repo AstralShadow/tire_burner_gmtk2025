@@ -18,7 +18,7 @@ namespace game
         {855, 318, 140, 84},
     };
     extern array<u32, 4> new_car_timeouts;
-    constexpr u32 new_car_timeout = 1500; // ms
+    constexpr u32 new_car_timeout = 660; // ms
 
     constexpr SDL_Rect new_car_button_icon {
         0, 0, 140, 50
