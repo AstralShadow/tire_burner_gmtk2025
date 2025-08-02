@@ -41,6 +41,7 @@ namespace game
 
     FPoint car_pos(Car const&, float* rotation = nullptr);
 
+    extern size_t total_tires;
     extern size_t tires;
     extern bool discovered_tires;
 };

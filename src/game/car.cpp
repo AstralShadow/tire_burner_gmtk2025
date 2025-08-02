@@ -31,7 +31,7 @@ static constexpr std::array<std::pair<const char*, const char*>, game::CAR_LAST>
 
 static constexpr std::array<float, game::CAR_LAST> _speed // px/s
 {
-    230, 245, 265, 280,
+    230, 280, 320, 430,
     330, 350, 370, 400, // TODO balance
     510, 530, 550, 570,
     420, 430, 440, 450,
@@ -39,7 +39,7 @@ static constexpr std::array<float, game::CAR_LAST> _speed // px/s
 
 static constexpr std::array<size_t, game::CAR_LAST> _price // px/s
 {
-    7, 15, 31, 64,
+    2, 6, 20, 64,
     25, 25, 25, 25, // TODO balance
     100, 100, 100, 100,
     100, 100, 100, 100
@@ -55,7 +55,7 @@ static constexpr std::array<size_t, game::CAR_LAST> _tires
 
 static constexpr std::array<size_t, game::CAR_LAST> _meters_per_tire_change
 {
-    200, 180, 155, 130,
+    230, 200, 180, 125,
     100, 100, 100, 100, // TODO balance
     100, 100, 100, 100,
     100, 100, 100, 100
