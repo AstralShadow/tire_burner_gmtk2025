@@ -145,7 +145,6 @@ static string format_number(double number, bool floating = true)
 
 void game::render_stats()
 {
-    constexpr float px_to_meter = 0.06;
     constexpr Point pos {21, 27};
 
     double mileage = 0;
@@ -153,7 +152,9 @@ void game::render_stats()
     for(auto& car : cars) {
         auto const& track = game::track(car.track);
         mileage += track.lap_len * px_to_meter * car.laps + car.pos * px_to_meter;
-        laps += car.laps + car.pos / track.lap_len;
+        mileage += car.stashed_mileage;
+        if(!car.on_entrance)
+            laps += car.laps + car.pos / track.lap_len;
     }
 
     string text = "Cars: " + format_number(cars.size(), false) + "\n";

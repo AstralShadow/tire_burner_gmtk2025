@@ -12,7 +12,7 @@ using std::endl;
 #ifdef __EMSCRIPTEN__
 static constexpr bool debug_log = false;
 #else
-static constexpr bool debug_log = true;
+static constexpr bool debug_log = false;
 #endif
 
 
@@ -39,8 +39,7 @@ void game::move_cars(u32 ms)
         car.pos += (1 - car.stopped) * type.speed * ms / 1000.0f;
 
         if(car.on_entrance && car.pos > track.entrance_len) {
-            // TODO stash in the path?
-
+            car.stashed_mileage = track.entrance_len;
             car.pos -= track.entrance_len;
             car.on_entrance = false;
         } else if(!car.on_entrance && car.pos > track.lap_len) {
@@ -115,12 +114,10 @@ void game::prevent_crashes(u32 ms)
         if(debug_log) {
             cout << endl << "track: " << track_id << endl;
 
-            /*
             cout << "pos: ";
             for(auto p : pos)
-                cout << p << ' ';
+                cout << std::format("{:5.1f}", p) << ' ';
             cout << endl;
-            */
 
             cout << "e_pos: ";
             for(auto p : e_pos)
@@ -138,7 +135,8 @@ void game::prevent_crashes(u32 ms)
 
             float back = car.pos - type.size.y / 2 + 1; // +1 to skip self
             float nose = car.pos + type.size.y / 2;
-            cout << std::format("nose: {:5.1f} back: {:5.1f}", nose, back) << endl;
+            if(debug_log)
+                cout << std::format("nose: {:5.1f} back: {:5.1f}", nose, back) << endl;
 
             auto const& close_by = car.on_entrance ? e_pos : pos;
             auto next = std::lower_bound(close_by.begin(), close_by.end(), back);
@@ -161,7 +159,7 @@ void game::prevent_crashes(u32 ms)
 
                 if(car.on_entrance) {
                     float relative = car.pos - track.entrance_len;
-                    float overlap = track.entrance_path_overlap + type.size.y;
+                    float overlap = track.entrance_path_overlap + type.size.y * 1.5;
                     if(-relative < overlap) {
                         should_wait = false;
                         hard_stop = false;
