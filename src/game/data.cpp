@@ -14,6 +14,7 @@ vector<Car> game::cars;
 
 
 size_t game::tires = 0;
+bool game::discovered_tires = false;
 
 array<u32, car_types_per_track> game::new_car_timeouts {0, 0, 0, 0};
 

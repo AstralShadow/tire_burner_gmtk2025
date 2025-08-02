@@ -209,8 +209,10 @@ void game::render_stats()
     string text = "Cars: " + cars + "\n";
     text += "Mileage: " + format_number(mileage, false) + "m\n";
     text += "Loops: " + format_number(laps) + "\n";
-    if(tires > 0)
+    if(discovered_tires || tires > 0) {
         text += "Burned: " + format_number(tires, false) + " tires\n";
+        discovered_tires = true;
+    }
 
 
     auto font = get_font(FT_DEFAULT, 24);
