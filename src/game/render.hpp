@@ -2,9 +2,15 @@
 
 namespace game
 {
-    constexpr SDL_Rect new_car1_button
+    constexpr SDL_Rect new_car_button
     {
-        918, 10,
-        96, 96
+        855, 36,
+        140, 94
+    };
+
+    constexpr SDL_Rect new_car_button_icon
+    {
+        855, 36,
+        140, 50
     };
 }

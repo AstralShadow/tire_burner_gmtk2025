@@ -15,10 +15,18 @@ using std::cout;
 using std::endl;
 
 
-static constexpr bool render_track_path = true;
+#ifdef __EMSCRIPTEN__
+static constexpr bool render_debug_lines = false;
+#else
+static constexpr bool render_debug_lines = true;
+#endif
+
+static constexpr bool render_track_path = render_debug_lines;
+static constexpr bool render_button_area = render_debug_lines;
+
 static constexpr SDL_Color stats_color {0, 0, 0, 255};
-static constexpr SDL_Color price_color {0, 200, 0, 255};
-static constexpr SDL_Color price_color_too_expensive {64, 64, 64, 255};
+static constexpr SDL_Color price_color {0, 255, 0, 255};
+static constexpr SDL_Color price_color_too_expensive {255, 0, 0, 255};
 
 
 static auto& rnd = core::renderer;
@@ -191,7 +199,7 @@ size_t game::render_price(SDL_Rect area, string price, SDL_Color color)
 
     SDL_Rect dest {
         area.x + (area.w - size.x) / 2,
-        area.y + area.h + 10,
+        area.y + area.h - size.y - 10,
         size.x, size.y
     };
 
@@ -204,19 +212,21 @@ size_t game::render_price(SDL_Rect area, string price, SDL_Color color)
 
 void game::render_buttons()
 {
-    SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
-    SDL_RenderDrawRect(rnd, &new_car1_button);
+    if(render_button_area) {
+        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
+        SDL_RenderDrawRect(rnd, &new_car_button);
+    }
 
     auto type = car_type(CAR_01);
     SDL_Rect area {
-        new_car1_button.x + (new_car1_button.w - type.size.x) / 2,
-        new_car1_button.y + (new_car1_button.h - type.size.y) / 2,
+        new_car_button_icon.x + (new_car_button_icon.w - type.size.x) / 2,
+        new_car_button_icon.y + (new_car_button_icon.h - type.size.y) / 2,
         type.size.x, type.size.y
     };
-    SDL_RenderCopy(rnd, type.tex, nullptr, &area);
+    SDL_RenderCopyEx(rnd, type.tex, nullptr, &area, 90, nullptr, SDL_FLIP_NONE);
 
     string price_tag = format_number(type.price, false) + " tires";
     auto color = type.price > tires ? price_color_too_expensive : price_color;
 
-    area.y = render_price(area, price_tag, color);
+    area.y = render_price(new_car_button, price_tag, color);
 }
