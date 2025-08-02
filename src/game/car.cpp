@@ -27,12 +27,16 @@ static constexpr std::array<std::pair<const char*, const char*>, game::CAR_LAST>
 
 static constexpr std::array<float, game::CAR_LAST> _speed // px/s
 {
-    250,
+    250, 260, 255, 265,
+    350, 370, 360, 380,
+    510, 530, 550, 570,
 };
 
 static constexpr std::array<size_t, game::CAR_LAST> _price // px/s
 {
-    10,
+    10, 10, 10, 10,
+    25, 25, 25, 25,
+    100, 100, 100, 100,
 };
 
 #undef PATH_BASE
@@ -46,8 +50,9 @@ game::CarType& game::car_type(CarEnum index)
         return _cars[index];
 
 
-    cout << "Car " << index << " textures: " << _textures[index].first <<
-                                         " " << _textures[index].second;
+    cout << "Car " << index
+        << " textures: " << _textures[index].first
+        << " " << _textures[index].second << endl;
 
     auto surface = utils::load_surface(_textures[index].first);
     _cars[index].tex = utils::create_texture(surface);

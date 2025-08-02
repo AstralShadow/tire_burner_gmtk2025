@@ -12,7 +12,6 @@ namespace game
     extern TrackEnum current_track;
     extern TrackEnum unlocked_end;
 
-
     struct Car
     {
         TrackEnum track;
