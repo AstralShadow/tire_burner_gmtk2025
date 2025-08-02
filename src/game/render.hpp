@@ -1,12 +1,16 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 using std::array;
+using std::vector;
 
 
 namespace game
 {
+    enum TrackEnum : u8;
+
     constexpr array<SDL_Rect, 4> new_car_buttons { SDL_Rect
         {855, 36, 140, 94},
         {855, 140, 140, 94},
@@ -21,11 +25,27 @@ namespace game
     };
 
 
+    struct TireProfitParticle
+    {
+        TrackEnum track;
+        FPoint pos;
+        float lifetime = 1.5f; // seconds
+
+        FPoint motion;
+        size_t tires;
+
+        static constexpr float speed = 60.0f; // px/s
+    };
+    extern vector<TireProfitParticle> tire_profit_particles;
+    void spawn_profit_particle(FPoint pos, size_t tires);
+
+
     constexpr SDL_Color stats_color {255, 255, 255, 255};
     constexpr SDL_Color price_color {0, 255, 0, 255};
     constexpr SDL_Color price_color_too_expensive {255, 0, 0, 255};
     constexpr SDL_Color price_color_no_space {32, 32, 32, 255};
     constexpr SDL_Color scrap_color {255, 255, 0, 255};
+    constexpr SDL_Color profit_particle_color {255, 255, 255, 255};
 
     constexpr auto menu_track_overlay = "assets/menu/track_overlay.png";
 }

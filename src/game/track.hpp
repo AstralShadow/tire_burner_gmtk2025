@@ -13,7 +13,7 @@ struct SDL_Texture;
 
 namespace game
 {
-    enum TrackEnum
+    enum TrackEnum : u8
     {
         TRACK_01,
         TRACK_02,

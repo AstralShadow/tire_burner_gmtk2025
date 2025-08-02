@@ -37,6 +37,7 @@ namespace game
 
     extern vector<Car> cars;
 
+    FPoint car_pos(Car const&, float* rotation = nullptr);
 
     extern size_t tires;
 };

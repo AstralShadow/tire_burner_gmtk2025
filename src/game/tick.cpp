@@ -22,6 +22,7 @@ namespace game
     static void move_cars(u32 ms);
     static void prevent_crashes(u32 ms);
     static void decrease_timeouts(u32 ms);
+    static void move_particles(u32 ms);
 }
 
 
@@ -30,6 +31,7 @@ void game::tick(u32 ms, scene_uid)
     move_cars(ms);
     prevent_crashes(ms);
     decrease_timeouts(ms);
+    move_particles(ms);
 }
 
 
@@ -52,10 +54,10 @@ void game::move_cars(u32 ms)
 
         double mileage = car.stashed_mileage + car.laps * track.lap_len + car.pos;
         double delta = mileage * px_to_meter - car.converted_meters_into_tires;
-        cout << delta << endl;
         if(type.meters_per_tire_change < delta) {
             tires += type.tires;
             car.converted_meters_into_tires += type.meters_per_tire_change;
+            spawn_profit_particle(car_pos(car), type.tires);
         }
 
 
@@ -218,5 +220,21 @@ void game::decrease_timeouts(u32 ms)
             timeout = 0;
         else
             timeout -= ms;
+    }
+}
+
+void game::move_particles(u32 ms)
+{
+    for(auto& particle : tire_profit_particles) {
+        particle.lifetime -= ms / 1000.0f;
+        particle.pos.x += particle.motion.x * particle.speed * ms / 1000.0f;
+        particle.pos.y += particle.motion.y * particle.speed * ms / 1000.0f;
+    }
+
+    for(size_t i = 0; i < tire_profit_particles.size(); i++) {
+        if(tire_profit_particles[i].lifetime < 0.0f) {
+            std::swap(tire_profit_particles[i], tire_profit_particles.back());
+            tire_profit_particles.pop_back();
+        }
     }
 }

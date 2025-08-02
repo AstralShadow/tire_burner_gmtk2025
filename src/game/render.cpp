@@ -7,10 +7,12 @@
 #include "utils/textures.hpp"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
+#include <map>
 #include <algorithm>
 #include <format>
 #include <iostream>
 
+using std::map;
 using std::cout;
 using std::endl;
 
@@ -37,6 +39,8 @@ namespace game
     static void render_stats();
     static void render_buttons();
     static void render_price(SDL_Rect area, string const& price, SDL_Color color);
+
+    static void render_profit_particles();
 }
 
 void game::render(scene_uid)
@@ -49,6 +53,8 @@ void game::render(scene_uid)
     render_track_overlay();
     render_stats();
     render_buttons();
+
+    render_profit_particles();
 
     SDL_RenderPresent(rnd);
 }
@@ -82,40 +88,53 @@ void game::render_track()
     }
 }
 
+FPoint game::car_pos(Car const& car, float* _rotation)
+{
+    auto const& track = game::track(car.track);
+
+    float pos = car.pos;
+
+    auto const& path = car.on_entrance ? track.entrance : track.path;
+    auto const& lens = car.on_entrance ? track.entrance_lens : track.path_lens;
+
+    auto itr = std::lower_bound(lens.begin(), lens.end(), pos);
+    auto i1 = std::distance(lens.begin(), itr);
+    auto i2 = (i1 + 1) % path.size();
+
+    FPoint p1 = path[i1];
+    FPoint p2 = path[i2];
+    FPoint delta = p2 - p1;
+
+    float rotation = atan2(delta.y, delta.x) + pi_f() / 2;
+    if(_rotation)
+        *_rotation = rotation;
+
+    float len = *itr;
+    float past = i1 == 0 ? 0 : *(itr - 1);
+    float progress = (pos - past) / (len - past);
+
+    delta.x *= progress;
+    delta.y *= progress;
+
+    FPoint offset_delta {
+        car.offset * cos(rotation),
+        car.offset * sin(rotation)
+    };
+
+    FPoint center = p1 + delta + offset_delta;
+
+    return center;
+}
+
 void game::render_cars()
 {
     for(auto& car : cars) {
-        auto const& track = game::track(car.track);
         auto const& type = car_type(car.type);
-        auto pos = car.pos;
 
-        auto const& path = car.on_entrance ? track.entrance : track.path;
-        auto const& lens = car.on_entrance ? track.entrance_lens : track.path_lens;
+        float rotation;
+        FPoint center = car_pos(car, &rotation);
 
-        auto itr = std::lower_bound(lens.begin(), lens.end(), pos);
-        auto i1 = std::distance(lens.begin(), itr);
-        auto i2 = (i1 + 1) % path.size();
-
-        FPoint p1 = path[i1];
-        FPoint p2 = path[i2];
-        FPoint delta = p2 - p1;
-
-        float rotation = atan2(delta.y, delta.x) + pi_f() / 2;
         float degrees = rotation * 180 / pi_f();
-
-        float len = *itr;
-        float past = i1 == 0 ? 0 : *(itr - 1);
-        float progress = (pos - past) / (len - past);
-
-        delta.x *= progress;
-        delta.y *= progress;
-
-        FPoint offset_delta {
-            car.offset * cos(rotation),
-            car.offset * sin(rotation)
-        };
-
-        FPoint center = p1 + delta + offset_delta;
 
         SDL_Rect dest {
             static_cast<int>(center.x) - type.size.x / 2,
@@ -271,5 +290,43 @@ void game::render_buttons()
             else
                 render_price(new_car_button, price_tag, price_color_no_space);
         }
+    }
+}
+
+
+void game::render_profit_particles()
+{
+    // Cached by tires count
+    static std::map<size_t, SDL_Texture*> textures;
+    static std::map<size_t, Point> texture_sizes;
+
+    for(auto p : tire_profit_particles) {
+        if(p.track != current_track)
+            continue;
+
+        auto itr = textures.find(p.tires);
+        auto size_itr = texture_sizes.find(p.tires);
+        if(itr == textures.end()) {
+            auto font = get_font(FT_DEFAULT, 24);
+            auto text = std::format("+{} tires!", p.tires);
+            auto surf = TTF_RenderUTF8_Blended(font, text.c_str(), profit_particle_color);
+            if(!surf) {
+                cout << "Failed to render text" << endl;
+                cout << TTF_GetError() << endl;
+                return;
+            }
+
+            itr = textures.emplace(p.tires, std::move(utils::create_texture(surf))).first;
+            size_itr = texture_sizes.emplace(p.tires, Point { surf->w, surf->h }).first;
+            SDL_FreeSurface(surf);
+        }
+
+        SDL_Rect area {
+            static_cast<int>(p.pos.x - size_itr->second.x / 2),
+            static_cast<int>(p.pos.y - size_itr->second.y / 2),
+            size_itr->second.x, size_itr->second.y
+        };
+
+        SDL_RenderCopy(rnd, itr->second, nullptr, &area);
     }
 }
