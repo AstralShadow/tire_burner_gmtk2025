@@ -16,7 +16,8 @@ void game::init(int, char**, scene_uid)
         track(static_cast<TrackEnum>(i));
 
 #ifndef __EMSCRIPTEN__
-    tires = 20;
+    //tires = 5000;
+    //total_tires = 5000;
 #endif
 }
 
