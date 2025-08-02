@@ -16,7 +16,7 @@ using std::endl;
 
 
 static constexpr bool render_track_path = true;
-static constexpr SDL_Color stats_color {0, 0, 255, 255};
+static constexpr SDL_Color stats_color {0, 0, 0, 255};
 static constexpr SDL_Color price_color {0, 200, 0, 255};
 static constexpr SDL_Color price_color_too_expensive {64, 64, 64, 255};
 
@@ -128,16 +128,17 @@ static string format_number(double number, bool floating = true)
     else if(number < 1000 && !floating)
         return std::format("{:.0f}", number);
     else if (number < 1000 * 1000)
-        return std::format("{:.3f}K", number / 1000);
+        return std::format("{:.1f}K", number / 1000);
     else if (number < 1000 * 1000 * 1000)
-        return std::format("{:.3f}M", number / 1000000);
+        return std::format("{:.1f}M", number / 1000000);
     else
-        return std::format("{:.2e}", number);
+        return std::format("{:.3e}", number);
 }
 
 void game::render_stats()
 {
     constexpr float px_to_meter = 0.06;
+    constexpr Point pos {21, 27};
 
     double mileage = 0;
     double laps = 0;
@@ -147,10 +148,11 @@ void game::render_stats()
         laps += car.laps + car.pos / track.lap_len;
     }
 
-    string text = "Mileage: " + format_number(mileage) + "m\n";
-    text += "Loops: " + format_number(laps) + " laps\n";
+    string text = "Cars: " + format_number(cars.size(), false) + "\n";
+    text += "Mileage: " + format_number(mileage, false) + "m\n";
+    text += "Loops: " + format_number(laps) + "\n";
     if(tires > 0)
-        text += "Tested tires: " + format_number(tires, false) + " tires\n";
+        text += "\nTested: " + format_number(tires, false) + " tires\n";
 
 
     auto font = get_font(FT_DEFAULT, 24);
@@ -165,7 +167,7 @@ void game::render_stats()
     Point size { surf->w, surf->h };
     SDL_FreeSurface(surf);
 
-    SDL_Rect dest { 10, 10, size.x, size.y };
+    SDL_Rect dest { pos.x, pos.y, size.x, size.y };
 
     SDL_RenderCopy(rnd, texture, nullptr, &dest);
 
