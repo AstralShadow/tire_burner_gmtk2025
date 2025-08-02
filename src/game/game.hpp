@@ -17,6 +17,7 @@ namespace game
     void render(scene_uid = 0);
     
     void keydown(SDL_KeyboardEvent&, scene_uid = 0);
+    void mouseup(SDL_MouseButtonEvent& ev, scene_uid = 0);
     void mousedown(SDL_MouseButtonEvent& ev, scene_uid = 0);
 }
 

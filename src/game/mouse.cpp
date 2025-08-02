@@ -4,6 +4,10 @@
 #include <SDL2/SDL_events.h>
 
 
+void game::mouseup(SDL_MouseButtonEvent&, scene_uid)
+{ }
+
+
 void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
 {
     static auto car = CAR_01;
