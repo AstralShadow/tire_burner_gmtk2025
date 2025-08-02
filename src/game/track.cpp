@@ -48,6 +48,7 @@ game::Track& game::track(TrackEnum index)
 
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
+    SDL_SetTextureBlendMode(_tracks[index].tex, SDL_BLENDMODE_NONE);
     _tracks[index].price = _prices[index];
 
     parse_path(_tracks[index], _paths[index]);
