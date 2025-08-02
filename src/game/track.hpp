@@ -24,11 +24,19 @@ namespace game
     struct Track
     {
         SDL_Texture* tex = nullptr;
+
         vector<FPoint> path;
         float lap_len;
-
         vector<float> path_lens;
+
         float path_width = 0;
+
+        vector<FPoint> entrance;
+        float entrance_len;
+        vector<float> entrance_lens;
+
+        static constexpr float entrance_width = 0;
+
 
         size_t loops_per_tire_change;
     };

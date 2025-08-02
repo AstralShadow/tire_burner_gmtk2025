@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 
+using std::cerr;
 using std::cout;
 using std::endl;
 
@@ -26,8 +27,8 @@ static constexpr std::array<const char*, game::TRACK_LAST> _paths
 static std::array<game::Track, game::TRACK_LAST> _tracks;
 
 
-static vector<FPoint> parse_path(game::Track&, fs::path);
-static std::pair<float, vector<float>> get_length(vector<FPoint> const&);
+static void parse_path(game::Track&, fs::path);
+static void calculate_lengths(game::Track&);
 
 
 game::Track& game::track(TrackEnum index)
@@ -37,10 +38,8 @@ game::Track& game::track(TrackEnum index)
 
 
     _tracks[index].tex = utils::load_texture(_textures[index]);
-    _tracks[index].path = parse_path(_tracks[index], _paths[index]);
-    auto len = get_length(_tracks[index].path);
-    _tracks[index].lap_len = len.first;
-    _tracks[index].path_lens = std::move(len.second);
+    parse_path(_tracks[index], _paths[index]);
+    calculate_lengths(_tracks[index]);
 
     cout << "Track " << index << " image: " << _textures[index] << endl;
     cout << "Track " << index << " points: " << _tracks[index].path.size() << endl;
@@ -51,9 +50,17 @@ game::Track& game::track(TrackEnum index)
 }
 
 
-vector<FPoint> parse_path(game::Track& track, fs::path path)
+void parse_path(game::Track& track, fs::path path)
 {
-    vector<FPoint> points;
+    enum TrackSection {
+        TS_NONE,
+        TS_PATH,
+        TS_ENTRANCE,
+    } section = TS_NONE;
+
+    vector<FPoint> path_points;
+    vector<FPoint> entrance_points;
+
 
     std::ifstream file(path);
 
@@ -69,38 +76,6 @@ vector<FPoint> parse_path(game::Track& track, fs::path path)
         if(type.empty() || type[0] == '#')
             continue;
 
-        if(type == "POINT") {
-            float x, y;
-            line >> x >> y;
-            points.push_back({x, y});
-            continue;
-        }
-
-        if(type == "ARC") {
-            FPoint center, start;
-            float degrees;
-            line >> center.x >> center.y >> start.x >> start.y >> degrees;
-            float radians = degrees * pi_f() / 180;
-
-            FPoint d = start - center;
-            auto radius = std::sqrt(d.x * d.x + d.y * d.y);
-            auto a1 = atan2(d.y, d.x);
-
-            size_t count = radius * radians / 5 + 2;
-
-            for(size_t i = 0; i <= count; i++) {
-                float angle = a1 + radians * i / count;
-                FPoint delta {
-                    cos(angle) * radius,
-                    sin(angle) * radius
-                };
-                FPoint pos = center + delta;
-
-                points.push_back(pos);
-            }
-
-            continue;
-        }
 
         if(type == "TRACK_WIDTH") {
             float width;
@@ -116,13 +91,108 @@ vector<FPoint> parse_path(game::Track& track, fs::path path)
             continue;
         }
 
+
+        if(type == "PATH_BEGIN") {
+            if(section != TS_NONE)
+                cerr << "Error in " << path << ": PATH_BEGIN in wrong section!" << endl;
+
+            section = TS_PATH;
+            continue;
+        }
+
+        if(type == "PATH_END") {
+            if(section != TS_PATH)
+                cerr << "Error in " << path << ": PATH_END but not in path section!" << endl;
+
+            section = TS_NONE;
+            continue;
+        }
+
+        if(type == "ENTRANCE_BEGIN") {
+            if(section != TS_NONE)
+                cerr << "Error in " << path << ": ENTRANCE_BEGIN in wrong section!" << endl;
+
+            section = TS_ENTRANCE;
+            continue;
+        }
+        if(type == "ENTRANCE_END") {
+            if(section != TS_ENTRANCE)
+                cerr << "Error in " << path << ": ENTRANCE_END but not in entrance section!" << endl;
+            section = TS_NONE;
+            continue;
+        }
+
+
+        if(type == "POINT") {
+            if(section != TS_PATH && section != TS_ENTRANCE)
+                cerr << "Error in " << path << ": POINT not in path or entrance section!" << endl;
+
+            float x, y;
+            line >> x >> y;
+            switch(section) {
+                case TS_NONE:
+                    continue;
+
+                case TS_PATH:
+                    path_points.push_back({x, y});
+                    continue;
+
+                case TS_ENTRANCE:
+                    entrance_points.push_back({x, y});
+                    continue;
+            }
+            continue;
+        }
+
+        if(type == "ARC") {
+            if(section != TS_PATH && section != TS_ENTRANCE)
+                cerr << "Error in " << path << ": ARC not in path or entrance section!" << endl;
+
+            FPoint center, start;
+            float degrees;
+            line >> center.x >> center.y >> start.x >> start.y >> degrees;
+            float radians = degrees * pi_f() / 180;
+
+            FPoint d = start - center;
+            auto radius = std::sqrt(d.x * d.x + d.y * d.y);
+            auto a1 = atan2(d.y, d.x);
+
+            size_t count = radius * abs(radians) / 5 + 2;
+
+            for(size_t i = 0; i <= count; i++) {
+                float angle = a1 + radians * i / count;
+                FPoint delta {
+                    cos(angle) * radius,
+                    sin(angle) * radius
+                };
+                FPoint pos = center + delta;
+
+                switch(section) {
+                    case TS_NONE:
+                        continue;
+
+                    case TS_PATH:
+                        path_points.push_back(pos);
+                        continue;
+
+                    case TS_ENTRANCE:
+                        entrance_points.push_back(pos);
+                        continue;
+                }
+            }
+
+            continue;
+        }
+
         cout << "Unknown path instruction: " << _line << endl;
     }
 
-    return points;
+    track.path = std::move(path_points);
+    track.entrance = std::move(entrance_points);
 }
 
-std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
+
+static std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
 {
     float len = 0;
     vector<float> lens;
@@ -138,4 +208,15 @@ std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
     }
 
     return {len, lens};
+}
+
+void calculate_lengths(game::Track& track)
+{
+    auto len = get_length(track.path);
+    track.lap_len = len.first;
+    track.path_lens = std::move(len.second);
+
+    len = get_length(track.entrance);
+    track.entrance_len = len.first;
+    track.entrance_lens = std::move(len.second);
 }

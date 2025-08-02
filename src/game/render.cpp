@@ -61,6 +61,17 @@ void game::render_track()
             track.path.rbegin()->y
         );
     }
+
+    if(render_track_path && !track.entrance.empty()) {
+        SDL_SetRenderDrawColor(rnd, 255, 0, 0, 255);
+        SDL_RenderDrawLinesF(rnd, track.entrance.data(), track.entrance.size());
+        SDL_RenderDrawLineF(rnd,
+            track.entrance.rbegin()->x,
+            track.entrance.rbegin()->y,
+            track.path.begin()->x,
+            track.path.begin()->y
+        );
+    }
 }
 
 void game::render_cars()

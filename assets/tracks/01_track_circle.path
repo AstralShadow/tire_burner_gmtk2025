@@ -1,10 +1,22 @@
+# Name: Track 1
+
+
+ENTRANCE_BEGIN
+
+ARC  -89 -172  -98 378  -35
+
+ENTRANCE_END
+
+
+PATH_BEGIN
+
+# ARC cente.x center.y  p1.x p1.y  radius (degree)
+ARC  512 360  347 188  360
+
+PATH_END
+
 # Track Width
 TRACK_WIDTH 125
 
 # Loops per tire change
 TIRE_CHANGE_LOOPS 2
-
-
-# ARC cente.x center.y  p1.x p1.y  radius (degree)
-ARC  512 360  271 360  359
-
