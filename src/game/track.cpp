@@ -96,13 +96,6 @@ void parse_path(game::Track& track, fs::path path)
             continue;
         }
 
-        if(type == "TIRE_CHANGE_LOOPS") {
-            size_t loops;
-            line >> loops;
-            track.loops_per_tire_change = loops;
-            continue;
-        }
-
 
         if(type == "PATH_BEGIN") {
             if(section != TS_NONE)

@@ -1,8 +1,5 @@
 # Name: Track 1
 
-# Loops per tire change
-TIRE_CHANGE_LOOPS 2
-
 MAX_CAR_COUNT 8
 
 

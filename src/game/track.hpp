@@ -42,7 +42,6 @@ namespace game
         float entrance_path_overlap = 0; // for traffic control
 
 
-        size_t loops_per_tire_change;
         size_t max_cars;
 
 

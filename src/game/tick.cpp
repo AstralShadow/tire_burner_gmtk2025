@@ -48,8 +48,14 @@ void game::move_cars(u32 ms)
         } else if(!car.on_entrance && car.pos > track.lap_len) {
             car.pos -= track.lap_len;
             car.laps++;
-            if(car.laps % track.loops_per_tire_change == 0)
-                tires += type.tires;
+        }
+
+        double mileage = car.stashed_mileage + car.laps * track.lap_len + car.pos;
+        double delta = mileage * px_to_meter - car.converted_meters_into_tires;
+        cout << delta << endl;
+        if(type.meters_per_tire_change < delta) {
+            tires += type.tires;
+            car.converted_meters_into_tires += type.meters_per_tire_change;
         }
 
 

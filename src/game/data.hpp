@@ -31,6 +31,8 @@ namespace game
 
         float stopped = 0.0f; // 1 - fully stopped
         float stashed_mileage = 0; // in pixels
+
+        double converted_meters_into_tires = 0; // how much of the mileage was converted into tires
     };
 
     extern vector<Car> cars;
