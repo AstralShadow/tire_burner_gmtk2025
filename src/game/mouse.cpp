@@ -141,10 +141,11 @@ bool game::track_button_click_hdl(Point pos)
             return true;
 
         tires -= price;
-        spent_tires_at_purchase[current_track] = total_tires - tires;
 
         current_track = unlocked_tracks_end;
         unlocked_tracks_end = static_cast<TrackEnum>(unlocked_tracks_end + 1);
+
+        spent_tires_at_purchase[current_track] = total_tires - tires;
 
         return true;
     }

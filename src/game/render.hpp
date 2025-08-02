@@ -1,5 +1,8 @@
 #pragma once
 
+#include "utils/types.hpp"
+#include "utils/point.hpp"
+#include <SDL2/SDL_pixels.h>
 #include <array>
 #include <vector>
 
@@ -68,5 +71,11 @@ namespace game
     constexpr SDL_Color scrap_enabled_color {255, 255, 0, 255};
     constexpr SDL_Color scrap_disabled_color {32, 32, 32, 255};
 
+    constexpr SDL_Color car_info_color {255, 255, 255, 255};
+
+    constexpr SDL_Color last_track_notice_color {255, 255, 255, 255};
+
+
     constexpr auto menu_track_overlay = "assets/menu/track_overlay.png";
+    constexpr auto text_box_path = "assets/menu/text_box.png";
 }

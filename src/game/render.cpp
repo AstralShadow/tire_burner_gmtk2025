@@ -19,8 +19,10 @@ using std::endl;
 
 #ifdef __EMSCRIPTEN__
 static constexpr bool render_debug_lines = false;
+static constexpr bool always_display_car_stats = false;
 #else
 static constexpr bool render_debug_lines = true;
+static constexpr bool always_display_car_stats = true;
 #endif
 
 static constexpr bool render_track_path = render_debug_lines;
@@ -40,7 +42,7 @@ namespace game
     static void render_car_buttons();
     static void render_scrap_button();
     static void render_track_buttons();
-    static void render_price(SDL_Rect area, string const& price, SDL_Color color);
+    static void render_price(SDL_Rect area, string const& price, SDL_Color color, size_t font_size = 24);
 
     static void render_profit_particles();
 }
@@ -283,9 +285,9 @@ void game::render_profit_particles()
 }
 
 
-void game::render_price(SDL_Rect area, string const& price, SDL_Color color)
+void game::render_price(SDL_Rect area, string const& price, SDL_Color color, size_t font_size)
 {
-    auto font = get_font(FT_DEFAULT, 24);
+    auto font = get_font(FT_DEFAULT, font_size);
     auto surf = TTF_RenderUTF8_Blended(font, price.c_str(), color);
     if(!surf) {
         cout << "Failed to render text" << endl;
@@ -370,6 +372,35 @@ void game::render_car_buttons()
             else
                 render_price(new_car_button, price_tag, price_color_no_space);
         }
+
+
+        // Display info
+        if(total_tires < car_type(CAR_03).price && !always_display_car_stats)
+            continue;
+
+        Point mouse;
+        SDL_GetMouseState(&mouse.x, &mouse.y);
+        if(SDL_PointInRect(&mouse, &new_car_button)) {
+            static auto frame = utils::load_texture(text_box_path);
+            constexpr Point size { 225, 107 };
+
+            SDL_Rect dest {
+                new_car_button.x - size.x - 10,
+                new_car_button.y + (new_car_button.h - size.y) / 2,
+                size.x, size.y
+            };
+
+            SDL_RenderCopy(rnd, frame, nullptr, &dest);
+
+            Point info_size = type.info_size;
+            SDL_Rect dest2 {
+                dest.x + dest.w / 2 - info_size.x / 2,
+                dest.y + dest.h / 2 - info_size.y / 2,
+                info_size.x, info_size.y
+            };
+
+            SDL_RenderCopy(rnd, type.info, nullptr, &dest2);
+        }
     }
 }
 
@@ -445,5 +476,24 @@ void game::render_track_buttons()
         }
 
         render_price(*area_ptr, tag, color);
+    }
+
+
+    // No more maps notice
+    if(current_track == TRACK_LAST - 1) {
+        auto area = map_buttons[1];
+
+        if(render_button_area) {
+            SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
+            SDL_RenderDrawRect(rnd, &area);
+        }
+
+        render_price(area, "Have fun!", last_track_notice_color, 24);
+        area.h -= 27;
+        render_price(area, "do photo", last_track_notice_color, 18);
+        area.h -= 24;
+        render_price(area, "min max", last_track_notice_color, 18);
+        area.h -= 24;
+        render_price(area, "no more tHraX", last_track_notice_color, 18);
     }
 }

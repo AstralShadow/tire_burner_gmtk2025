@@ -39,13 +39,16 @@ namespace game
     struct CarType
     {
         SDL_Texture* tex = nullptr;
-        SDL_Texture* tex2 = nullptr; // upgraded
+        SDL_Texture* tex2 = nullptr; // burning tires
         float speed;
         Point size;
         size_t tires;
 
         size_t price;
         size_t meters_per_tire_change;
+
+        SDL_Texture* info = nullptr;
+        Point info_size;
     };
 
 

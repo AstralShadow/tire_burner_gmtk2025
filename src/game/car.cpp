@@ -1,6 +1,11 @@
 #include "game/car.hpp"
+#include "game/data.hpp"
+#include "game/render.hpp"
 #include "utils/fs.hpp"
 #include "utils/textures.hpp"
+#include "utils/fonts.hpp"
+#include <SDL2/SDL_ttf.h>
+#include <format>
 #include <iostream>
 
 using std::cout;
@@ -61,8 +66,8 @@ static constexpr std::array<size_t, game::CAR_LAST> _meters_per_tire_change
 {
     230, 200, 180, 125,
     150, 125, 105, 70, // TODO balance
-    100, 75, 64, 60,
-    90, 80, 70, 60
+    100, 75, 68, 60,
+    50, 42, 35, 21
 };
 
 #undef PATH_BASE
@@ -107,6 +112,40 @@ game::CarType& game::car_type(CarEnum index)
     _cars[index].size = Point {surface->w, surface->h};
     SDL_FreeSurface(surface);
 
+
+    double speed_meters = _speed[index] * px_to_meter; 
+    double tire_time = _meters_per_tire_change[index];
+    size_t tires = _tires[index];
+    double burn_slow_compensation = 0.985;
+    double efficiency = speed_meters * tires * burn_slow_compensation / tire_time;
+    string info;
+
+    if(efficiency < 10) {
+        info = std::format(
+            "Speed: {:.1f}m/s\nTire change: {:.0f}m\nMax eff.: {:.2f} t/s",
+            speed_meters,
+            tire_time,
+            efficiency
+        );
+    } else {
+        info = std::format(
+            "Speed: {:.1f}m/s\nTire change: {:.0f}m\nMax eff.: {:.1f} t/s",
+            speed_meters,
+            tire_time,
+            efficiency
+        );
+    }
+
+    auto font = get_font(FT_DEFAULT, 20);
+    surface = TTF_RenderUTF8_Blended_Wrapped(font, info.c_str(), car_info_color, 0);
+    if(!surface) {
+        cout << "Failed to render text" << endl;
+        cout << TTF_GetError() << endl;
+        return _cars[index];
+    }
+    _cars[index].info = utils::create_texture(surface);
+    _cars[index].info_size = Point { surface->w, surface->h };
+    SDL_FreeSurface(surface);
 
     return _cars[index];
 }
