@@ -15,7 +15,7 @@ CONFIG = -D CORE_CONFIG \
 	-D USE_SDL2_IMAGE \
 	-D USE_SDL2_TTF
 
-__CXXFLAGS=-O2 -std=c++20 \
+__CXXFLAGS=-O3 -std=c++20 \
 	-Wall -Wextra -pedantic \
 	-fexperimental-library \
 	-flto \
@@ -27,7 +27,7 @@ __CXXFLAGS=-O2 -std=c++20 \
 	#--profiling
 
 LDFLAGS = ${__CXXFLAGS} \
-	-sASSERTIONS=1 \
+	#-sASSERTIONS=1 \
 	#-sINITIAL_MEMORY=67108864\
 	#-sALLOW_MEMORY_GROWTH=1 \
 	#-sENVIRONMENT=web \
