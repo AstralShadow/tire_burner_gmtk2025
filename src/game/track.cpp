@@ -192,12 +192,12 @@ void parse_path(game::Track& track, fs::path path)
 }
 
 
-static std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
+static std::pair<float, vector<float>> get_length(vector<FPoint> const& path, bool include_last)
 {
     float len = 0;
     vector<float> lens;
 
-    for(size_t i = 0; i < path.size(); i++) {
+    for(size_t i = 0; i < path.size() - 1 + include_last; i++) {
         FPoint p1 = path[i % path.size()];
         FPoint p2 = path[(i + 1) % path.size()];
 
@@ -212,11 +212,11 @@ static std::pair<float, vector<float>> get_length(vector<FPoint> const& path)
 
 void calculate_lengths(game::Track& track)
 {
-    auto len = get_length(track.path);
+    auto len = get_length(track.path, true);
     track.lap_len = len.first;
     track.path_lens = std::move(len.second);
 
-    len = get_length(track.entrance);
+    len = get_length(track.entrance, false);
     track.entrance_len = len.first;
     track.entrance_lens = std::move(len.second);
 }

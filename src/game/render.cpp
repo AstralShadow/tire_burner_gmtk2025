@@ -81,12 +81,15 @@ void game::render_cars()
         auto const& type = car_type(car.type);
         auto pos = car.pos;
 
-        auto itr = std::lower_bound(track.path_lens.begin(), track.path_lens.end(), pos);
-        auto i1 = std::distance(track.path_lens.begin(), itr);
-        auto i2 = (i1 + 1) % track.path_lens.size();
+        auto const& path = car.on_entrance ? track.entrance : track.path;
+        auto const& lens = car.on_entrance ? track.entrance_lens : track.path_lens;
 
-        FPoint p1 = track.path[i1];
-        FPoint p2 = track.path[i2];
+        auto itr = std::lower_bound(lens.begin(), lens.end(), pos);
+        auto i1 = std::distance(lens.begin(), itr);
+        auto i2 = (i1 + 1) % path.size();
+
+        FPoint p1 = path[i1];
+        FPoint p2 = path[i2];
         FPoint delta = p2 - p1;
 
         float rotation = atan2(delta.y, delta.x) + pi_f() / 2;

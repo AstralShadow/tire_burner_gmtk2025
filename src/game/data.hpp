@@ -17,8 +17,10 @@ namespace game
     {
         TrackEnum track;
         CarEnum type;
+
         float pos = 0;
         size_t laps = 0;
+        bool on_entrance = true;
 
         float offset = 0;
         float target_offset = 0;

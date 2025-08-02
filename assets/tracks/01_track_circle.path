@@ -4,6 +4,7 @@
 ENTRANCE_BEGIN
 
 ARC  -89 -172  -98 378  -35
+POINT  370 169
 
 ENTRANCE_END
 
@@ -11,7 +12,7 @@ ENTRANCE_END
 PATH_BEGIN
 
 # ARC cente.x center.y  p1.x p1.y  radius (degree)
-ARC  512 360  347 188  360
+ARC  512 360  370 169  360
 
 PATH_END
 

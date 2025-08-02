@@ -8,8 +8,14 @@ void game::tick(u32 ms, scene_uid)
     for(auto& car : cars) {
         auto const& type = car_type(car.type);
         auto const& track = game::track(car.track);
+
         car.pos += type.speed * ms / 1000.0f;
-        if(car.pos > track.lap_len) {
+        if(car.on_entrance && car.pos > track.entrance_len) {
+            // TODO stash in the path?
+
+            car.pos -= track.entrance_len;
+            car.on_entrance = false;
+        } else if(!car.on_entrance && car.pos > track.lap_len) {
             car.pos -= track.lap_len;
             car.laps++;
             if(car.laps % track.loops_per_tire_change == 0)
@@ -19,7 +25,8 @@ void game::tick(u32 ms, scene_uid)
 
         if(std::abs(car.target_offset - car.offset) < 5) {
             struct CarOffsetRNG;
-            float leeway = (track.path_width - type.size.x - 5);
+            auto path_width = car.on_entrance ? track.entrance_width : track.path_width;
+            float leeway = (path_width - type.size.x - 5);
             car.target_offset = leeway * (randomf<CarOffsetRNG>() - 0.5);
         }
 
