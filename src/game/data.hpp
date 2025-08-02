@@ -53,5 +53,8 @@ namespace game
     extern double deleted_laps;
     extern size_t deleted_cars;
 
+    extern bool show_extra_stats;
+    extern u32 start_time;
+
     extern std::array<size_t, TRACK_LAST> spent_tires_at_purchase;
 }

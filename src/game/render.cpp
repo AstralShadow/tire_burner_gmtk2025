@@ -488,12 +488,61 @@ void game::render_track_buttons()
             SDL_RenderDrawRect(rnd, &area);
         }
 
+        // In reverse order
         render_price(area, "Have fun!", last_track_notice_color, 24);
-        area.h -= 27;
-        render_price(area, "do photo", last_track_notice_color, 18);
-        area.h -= 24;
+        area.h -= 28;
+        render_price(area, "click & photo", last_track_notice_color, 18);
+        area.h -= 22;
         render_price(area, "min max", last_track_notice_color, 18);
-        area.h -= 24;
+        area.h -= 22;
         render_price(area, "no more tHraX", last_track_notice_color, 18);
+        area.h += 22 + 22 + 28;
+
+
+        // Extra stats
+        Point mouse;
+        SDL_GetMouseState(&mouse.x, &mouse.y);
+        if(!SDL_PointInRect(&mouse, &area) && !show_extra_stats)
+            return;
+
+
+        static auto frame = utils::load_texture(text_box_path); // TODO don't load twice?
+        constexpr Point size { 225, 107 };
+
+
+        SDL_Rect dest {
+            area.x - size.x - 10,
+            area.y + (area.h - size.y) / 2,
+            size.x, size.y
+        };
+
+        SDL_RenderCopy(rnd, frame, nullptr, &dest);
+
+
+        string final_stats = std::format(
+            "Total tires: {}\nTime played: {:.2f}s\nThanks for playing!",
+            total_tires,
+            (SDL_GetTicks() - start_time) / 1000.0
+        );
+
+        auto font = get_font(FT_DEFAULT, 20);
+        auto surface = TTF_RenderUTF8_Blended_Wrapped(font, final_stats.c_str(), car_info_color, 0);
+        if(!surface) {
+            cout << "Failed to render text" << endl;
+            cout << TTF_GetError() << endl;
+            return;
+        }
+        auto final_stats_texture = utils::create_texture(surface);
+        Point info_size { surface->w, surface->h };
+        SDL_FreeSurface(surface);
+
+
+        SDL_Rect dest2 {
+            dest.x + dest.w / 2 - info_size.x / 2,
+            dest.y + dest.h / 2 - info_size.y / 2,
+            info_size.x, info_size.y
+        };
+
+        SDL_RenderCopy(rnd, final_stats_texture, nullptr, &dest2);
     }
 }

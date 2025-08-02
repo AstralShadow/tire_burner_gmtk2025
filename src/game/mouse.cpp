@@ -2,6 +2,7 @@
 #include "game/data.hpp"
 #include "game/render.hpp"
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_timer.h>
 #include <algorithm>
 #include <iostream>
 
@@ -86,6 +87,10 @@ bool game::new_car_button_click_hdl(Point pos)
                 return true;
             }
 
+            if(cars.empty() && i == 0)
+                start_time = SDL_GetTicks();
+
+
             cars.push_back(Car {
                 .track = current_track,
                 .type = static_cast<CarEnum>(i + current_track * car_types_per_track)
@@ -126,8 +131,10 @@ bool game::track_button_click_hdl(Point pos)
     }
 
     if(SDL_PointInRect(&pos, &map_buttons[1])) {
-        if(current_track >= TRACK_LAST - 1)
+        if(current_track >= TRACK_LAST - 1) {
+            show_extra_stats = !show_extra_stats;
             return true;
+        }
 
         auto next = static_cast<TrackEnum>(current_track + 1);
 

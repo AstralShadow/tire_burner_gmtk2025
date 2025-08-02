@@ -33,6 +33,10 @@ array<size_t, TRACK_LAST> game::spent_tires_at_purchase {
 };
 
 
+bool game::show_extra_stats;
+u32 game::start_time;
+
+
 array<u32, car_types_per_track> game::new_car_timeouts {0, 0, 0, 0};
 
 
