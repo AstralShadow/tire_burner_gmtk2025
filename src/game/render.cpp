@@ -180,7 +180,14 @@ void game::render_stats()
 
     double mileage = 0;
     double laps = 0;
+    std::map<TrackEnum, size_t> cars_on_tracks;
     for(auto& car : cars) {
+        auto itr = cars_on_tracks.find(car.track);
+        if(itr == cars_on_tracks.end())
+            cars_on_tracks[car.track] = 1;
+        else
+            itr->second += 1;
+
         auto const& track = game::track(car.track);
         mileage += track.lap_len * px_to_meter * car.laps + car.pos * px_to_meter;
         mileage += car.stashed_mileage * px_to_meter;
@@ -188,7 +195,18 @@ void game::render_stats()
             laps += car.laps + car.pos / track.lap_len;
     }
 
-    string text = "Cars: " + format_number(cars.size(), false) + "\n";
+    string cars = "";
+    for(int i = TRACK_LAST - 1; i >= TRACK_01; i--) {
+        size_t count = cars_on_tracks[static_cast<TrackEnum>(i)];
+        if(!cars.empty())
+            cars = "+" + cars;
+        if(count > 0 || !cars.empty())
+            cars = std::to_string(count) + cars;
+    }
+    if(cars.empty())
+        cars = "0";
+
+    string text = "Cars: " + cars + "\n";
     text += "Mileage: " + format_number(mileage, false) + "m\n";
     text += "Loops: " + format_number(laps) + "\n";
     if(tires > 0)
