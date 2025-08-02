@@ -28,6 +28,11 @@ namespace game
         CAR_23,
         CAR_24,
 
+        CAR_31,
+        CAR_32,
+        CAR_33,
+        CAR_34,
+
         CAR_LAST
     };
 

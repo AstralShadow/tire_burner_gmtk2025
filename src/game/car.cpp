@@ -23,19 +23,25 @@ static constexpr std::array<std::pair<const char*, const char*>, game::CAR_LAST>
     {PATH_BASE "car3_2.png", PATH_BASE "car3_2_fire.png"},
     {PATH_BASE "car3_3.png", PATH_BASE "car3_3_fire.png"},
     {PATH_BASE "car3_4.png", PATH_BASE "car3_4_fire.png"},
+    {PATH_BASE "car4_1.png", PATH_BASE "car4_1_fire.png"},
+    {PATH_BASE "car4_2.png", PATH_BASE "car4_2_fire.png"},
+    {PATH_BASE "car4_3.png", PATH_BASE "car4_3_fire.png"},
+    {PATH_BASE "car4_4.png", PATH_BASE "car4_4_fire.png"},
 };
 
 static constexpr std::array<float, game::CAR_LAST> _speed // px/s
 {
     230, 245, 265, 280,
-    330, 350, 370, 400,
-    510, 530, 550, 570
+    330, 350, 370, 400, // TODO balance
+    510, 530, 550, 570,
+    420, 430, 440, 450,
 };
 
 static constexpr std::array<size_t, game::CAR_LAST> _price // px/s
 {
     7, 15, 31, 64,
-    25, 25, 25, 25,
+    25, 25, 25, 25, // TODO balance
+    100, 100, 100, 100,
     100, 100, 100, 100
 };
 
@@ -43,13 +49,15 @@ static constexpr std::array<size_t, game::CAR_LAST> _tires
 {
     4, 4, 4, 4,
     4, 4, 4, 4,
-    4, 4, 4, 4
+    4, 4, 4, 4,
+    6, 6, 6, 6
 };
 
 static constexpr std::array<size_t, game::CAR_LAST> _meters_per_tire_change
 {
     200, 180, 155, 130,
     100, 100, 100, 100, // TODO balance
+    100, 100, 100, 100,
     100, 100, 100, 100
 };
 
