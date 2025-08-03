@@ -589,16 +589,17 @@ void game::render_help_overlay()
 
     if(discovered_tires) {
         info += "\n\n"
-        "Tires. Burned tires. Your currency.";
+        "- Tires. Burned tires. Your currency.";
     }
 
     if(discovered_car_limit) {
         info += "\n\n"
-        "Tracks can only contain so much cars.";
+        "- Tracks can only contain so much cars.";
         if(discovered_scrap_option)
             info += "\nYou can scrap some of the cars.\n"
-                "You won't get your tires back.\n"
-                "You only get space for better cars.";
+                "You won't get your tires back,\n"
+                "but you do get space for better cars.\n\n"
+                "- Compare stats by hovering the shop.";
     }
 
     static string last_info;
@@ -616,7 +617,7 @@ void game::render_help_overlay()
 
     if(info != last_info || texture == nullptr) {
         auto font = get_font(FT_DEFAULT, 24);
-        auto surface = TTF_RenderUTF8_Blended_Wrapped(font, info.c_str(), help_color, 0);
+        auto surface = TTF_RenderUTF8_Blended_Wrapped(font, info.c_str(), game::help_color, 0);
         if(!surface) {
             cout << "Failed to render text" << endl;
             cout << TTF_GetError() << endl;
