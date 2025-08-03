@@ -1,9 +1,15 @@
 #include "menu/menu.hpp"
 #include "menu/logo.hpp"
 #include "core/scene.hpp"
+#include <iostream>
 
 
 size_t menu::current_bg_frame = 0;
+size_t menu::current_glass_frame = 0;
+float menu::glass_frame_transition_progress = 0;
+
+using std::cout;
+using std::endl;
 
 namespace menu
 {
@@ -30,4 +36,20 @@ void menu::tick(u32 ms, scene_uid)
         current_bg_frame = (current_bg_frame + 1) % bg_frames_count;
     }
 
+
+    static bool glass_waiting = true;
+    static float glass_frame_cache = 0;
+    glass_frame_cache += ms * glass_framerate / 1000.0f;
+
+    if(glass_waiting && glass_frame_cache > glass_delay * glass_framerate / 1000.0f) {
+        glass_frame_cache -= glass_delay * glass_framerate / 1000.0f;
+        glass_waiting = false;
+    } else if(!glass_waiting && glass_frame_cache > 1) {
+        glass_frame_cache -= 1.0f;
+        current_glass_frame = (current_glass_frame + 1) % glass_frames_count;
+        if(current_glass_frame == 0)
+            glass_waiting = true;
+    }
+
+    glass_frame_transition_progress = glass_waiting ? 0.0f : glass_frame_cache;
 }

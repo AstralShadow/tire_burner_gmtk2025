@@ -14,8 +14,12 @@ using namespace menu;
 namespace menu
 {
     static array<SDL_Texture*, bg_frames_count> _bg_frames;
+
+    static array<SDL_Texture*, glass_frames_count> _glass_frames;
+
     static array<SDL_Texture*, title_texture_count> _title_textures;
     static array<Point, title_texture_count> _title_size;
+
     static SDL_Texture* _play_btn_texture;
     static Point _play_btn_size;
 
@@ -25,6 +29,12 @@ namespace menu
         BASE "frame_2.png",
         BASE "frame_3.png",
         BASE "frame_4.png"
+    };
+    constexpr std::array<const char*, glass_frames_count> glass_paths {
+        BASE "glass_1.png",
+        BASE "glass_2.png",
+        BASE "glass_3.png",
+        BASE "glass_4.png"
     };
     constexpr std::array<const char*, title_texture_count> title_paths {
         BASE "title1.png",
@@ -61,6 +71,13 @@ array<SDL_Texture*, bg_frames_count> const& menu::bg_frames()
     return _bg_frames;
 }
 
+array<SDL_Texture*, glass_frames_count> const& menu::glass_frames()
+{
+    while(init_next()) { }
+
+    return _glass_frames;
+}
+
 array<SDL_Texture*, title_texture_count> const& menu::title_textures()
 {
     while(init_next()) { }
@@ -94,7 +111,7 @@ bool menu::init_next()
 {
     static size_t _step = 0;
 
-    if(_step == bg_frames_count + title_texture_count + 1)
+    if(_step == bg_frames_count + glass_frames_count + title_texture_count + 1)
         return false;
 
     auto step = _step++;
@@ -108,24 +125,36 @@ bool menu::init_next()
 
         return true;
     }
+    step -= bg_frames_count;
 
-    if(step < bg_frames_count + title_texture_count) {
-        step -= bg_frames_count;
+    if(step < glass_frames_count) {
+        auto data = load_texture(glass_paths[step], true);
+        _glass_frames[step] = data.first;
+        if(data.second != glass_size()) {
+            cout << "Glass frame doesn't match expected size!" << endl;
+        }
 
+        return true;
+    }
+    step -= glass_frames_count;
+
+    if(step < title_texture_count) {
         auto data = load_texture(title_paths[step], true);
         _title_textures[step] = data.first;
         _title_size[step] = data.second;
 
         return true;
     }
+    step -= title_texture_count;
 
-    if(step == bg_frames_count + title_texture_count) {
+    if(step == 0) {
         auto data = load_texture(play_btn_path, true);
         _play_btn_texture = data.first;
         _play_btn_size = data.second;
 
         return false;
     }
+    step--;
 
     cout << "Huh, menu::init_next overshooted?" << endl;
     return false;

@@ -15,11 +15,30 @@ static auto& rnd = core::renderer;
 
 void menu::render(scene_uid)
 {
-    // SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
-    // SDL_RenderClear(rnd);
-
+    // Background
     SDL_RenderCopy(rnd, bg_frames()[current_bg_frame % bg_frames_count], nullptr, nullptr);
 
+    /* Animated car glass */ {
+        size_t frame1 = current_glass_frame % glass_frames_count;
+        size_t frame2 = (frame1 + 1) % glass_frames_count;
+        auto tex1 = glass_frames()[frame1];
+        auto tex2 = glass_frames()[frame2];
+        float progress = glass_frame_transition_progress;
+
+        SDL_SetTextureAlphaMod(tex1, 255);
+        SDL_SetTextureAlphaMod(tex2, 255 * progress);
+
+        auto pos = glass_pos();
+        auto size = glass_size();
+
+        SDL_Rect area {
+            pos.x, pos.y,
+            size.x, size.y
+        };
+
+        SDL_RenderCopy(rnd, tex1, nullptr, &area);
+        SDL_RenderCopy(rnd, tex2, nullptr, &area);
+    }
 
     for(size_t i = 0; i < title_texture_count; i++) {
         auto tex = title_textures()[i];
