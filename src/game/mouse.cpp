@@ -165,8 +165,10 @@ bool game::track_button_click_hdl(Point pos)
 
 bool game::help_button_click_hdl(Point pos)
 {
-    if(!SDL_PointInRect(&pos, &help_area))
+    if(!SDL_PointInRect(&pos, &help_area)) {
+        render_help = false;
         return false;
+    }
 
     render_help = !render_help;
 

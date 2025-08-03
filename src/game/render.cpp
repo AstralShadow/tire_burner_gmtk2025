@@ -223,7 +223,7 @@ void game::render_stats()
     if(cars.empty())
         cars = "0";
 
-    string text = "Cars: " + cars + (deleted_cars > 0 ? std::format("[/{}]\n", game::cars.size() + deleted_cars) : "\n");
+    string text = "Cars: " + cars + "\n";
     if(mileage > 0.0)
         text += "Mileage: " + format_number(mileage, false) + "m\n";
     if(laps > 1.0)
@@ -533,9 +533,10 @@ void game::render_track_buttons()
 
 
         string final_stats = std::format(
-            "Total tires: {:.1e}\nTime played: {:.0f}s\n\nThanks for playing!",
+            "Total tires: {:.1e}\nTime played: {:.0f}s\nScrapped cars: {}\nThanks for playing!",
             total_tires * 1.0,
-            (SDL_GetTicks() - start_time) / 1000.0
+            (SDL_GetTicks() - start_time) / 1000.0,
+            deleted_cars
         );
 
         auto font = get_font(FT_DEFAULT, 18);
@@ -563,6 +564,11 @@ void game::render_track_buttons()
 
 void game::render_help_overlay()
 {
+    static bool new_help = false;
+
+    auto help_text_bg = new_help ? game::help_text_bg_new : game::help_text_bg;
+    auto help_color = new_help ? game::help_color_new : game::help_color;
+
     SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(rnd, help_text_bg.r, help_text_bg.g, help_text_bg.b, help_text_bg.a);
     SDL_RenderFillRect(rnd, &help_area);
@@ -572,9 +578,6 @@ void game::render_help_overlay()
     auto area = help_area;
     area.h -= 4;
     render_price(area, "Need help?", help_color, 18);
-    
-    if(!render_help)
-        return;
 
     string info =
         "This idle game is about wearing down tires.\n\n"
@@ -598,9 +601,18 @@ void game::render_help_overlay()
                 "You only get space for better cars.";
     }
 
+    static string last_info;
+
+    if(!render_help) {
+        if(info != last_info)
+            new_help = true;
+        return;
+    }
+    new_help = false;
+
     static SDL_Texture* texture = nullptr;
     static Point size;
-    static string last_info;
+
 
     if(info != last_info || texture == nullptr) {
         auto font = get_font(FT_DEFAULT, 24);

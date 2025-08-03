@@ -89,6 +89,8 @@ namespace game
 
     constexpr SDL_Color help_color {255, 255, 255, 255};
     constexpr SDL_Color help_text_bg {64, 64, 64, 196};
+    constexpr SDL_Color help_color_new {0, 0, 0, 255};
+    constexpr SDL_Color help_text_bg_new {255, 64, 64, 196};
 
 
     constexpr auto menu_track_overlay = "assets/ui/track_overlay.png";
