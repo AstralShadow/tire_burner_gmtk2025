@@ -15,6 +15,7 @@ namespace game
     static bool new_car_button_click_hdl(Point);
     static bool scrap_button_click_hdl(Point);
     static bool track_button_click_hdl(Point);
+    static bool help_button_click_hdl(Point);
 }
 
 
@@ -30,6 +31,8 @@ void game::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
     if(track_button_click_hdl(pos))
         return;
     if(scrap_button_click_hdl(pos))
+        return;
+    if(help_button_click_hdl(pos))
         return;
 }
 
@@ -158,4 +161,14 @@ bool game::track_button_click_hdl(Point pos)
     }
 
     return false;
+}
+
+bool game::help_button_click_hdl(Point pos)
+{
+    if(!SDL_PointInRect(&pos, &help_area))
+        return false;
+
+    render_help = !render_help;
+
+    return true;
 }

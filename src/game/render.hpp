@@ -17,6 +17,13 @@ namespace game
     constexpr size_t start_transition_time = 700;
 
 
+    extern bool render_help;
+    constexpr SDL_Rect help_area {
+        10, 720 - 38,
+        110, 28
+    };
+
+
     enum TrackEnum : u8;
 
     constexpr array<SDL_Rect, 4> new_car_buttons { SDL_Rect
@@ -79,6 +86,9 @@ namespace game
     constexpr SDL_Color car_info_color {255, 255, 255, 255};
 
     constexpr SDL_Color last_track_notice_color {255, 255, 255, 255};
+
+    constexpr SDL_Color help_color {255, 255, 255, 255};
+    constexpr SDL_Color help_text_bg {64, 64, 64, 196};
 
 
     constexpr auto menu_track_overlay = "assets/ui/track_overlay.png";

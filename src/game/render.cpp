@@ -29,14 +29,13 @@ static constexpr bool always_display_car_stats = true;
 static constexpr bool render_track_path = render_debug_lines;
 static constexpr bool render_button_area = render_debug_lines;
 
+bool game::render_help = false;
 
 
 static auto& rnd = core::renderer;
 
 namespace game
 {
-    static void render_scene_transition();
-
     static void render_track();
     static void render_cars();
 
@@ -47,7 +46,11 @@ namespace game
     static void render_track_buttons();
     static void render_price(SDL_Rect area, string const& price, SDL_Color color, size_t font_size = 24);
 
+    static void render_help_overlay();
+
     static void render_profit_particles();
+
+    static void render_scene_transition();
 }
 
 void game::render(scene_uid)
@@ -62,6 +65,8 @@ void game::render(scene_uid)
     render_car_buttons();
     render_scrap_button();
     render_track_buttons();
+
+    render_help_overlay();
 
     render_profit_particles();
 
@@ -553,6 +558,78 @@ void game::render_track_buttons()
 
         SDL_RenderCopy(rnd, final_stats_texture, nullptr, &dest2);
     }
+}
+
+
+void game::render_help_overlay()
+{
+    SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(rnd, help_text_bg.r, help_text_bg.g, help_text_bg.b, help_text_bg.a);
+    SDL_RenderFillRect(rnd, &help_area);
+    SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_NONE);
+    SDL_RenderDrawRect(rnd, &help_area);
+
+    auto area = help_area;
+    area.h -= 4;
+    render_price(area, "Need help?", help_color, 18);
+    
+    if(!render_help)
+        return;
+
+    string info =
+        "This idle game is about wearing down tires.\n\n"
+        "Buy cars from the right and wait for them\n"
+        "to wear down the tires. Then buy more cars.\n\n"
+        "Your progress is marked at the top left.\n"
+        "As you progress you'll unlock more stuff.\n"
+        "You may check this help section again then.";
+
+    if(discovered_tires) {
+        info += "\n\n"
+        "Tires. Burned tires. Your currency.";
+    }
+
+    if(discovered_car_limit) {
+        info += "\n\n"
+        "Tracks can only contain so much cars.";
+        if(discovered_scrap_option)
+            info += "\nYou can scrap some of the cars.\n"
+                "You won't get your tires back.\n"
+                "You only get space for better cars.";
+    }
+
+    static SDL_Texture* texture = nullptr;
+    static Point size;
+    static string last_info;
+
+    if(info != last_info || texture == nullptr) {
+        auto font = get_font(FT_DEFAULT, 24);
+        auto surface = TTF_RenderUTF8_Blended_Wrapped(font, info.c_str(), help_color, 0);
+        if(!surface) {
+            cout << "Failed to render text" << endl;
+            cout << TTF_GetError() << endl;
+            return;
+        }
+        texture = utils::create_texture(surface);
+        size = Point{ surface->w, surface->h };
+        SDL_FreeSurface(surface);
+
+        last_info = info;
+    }
+
+    SDL_Rect dest2 {
+        512 + - size.x / 2,
+        360 - size.y / 2,
+        size.x, size.y
+    };
+
+    SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(rnd, help_text_bg.r, help_text_bg.g, help_text_bg.b, help_text_bg.a);
+    SDL_RenderFillRect(rnd, &dest2);
+    SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_NONE);
+    SDL_RenderDrawRect(rnd, &dest2);
+
+    SDL_RenderCopy(rnd, texture, nullptr, &dest2);
 }
 
 
