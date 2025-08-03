@@ -27,6 +27,10 @@ Point menu::play_button_pos() {
 }
 
 
+bool menu::black_scene_transition_done = false;
+float menu::black_scene_transition = 0;
+
+
 void menu::tick(u32 ms, scene_uid)
 {
     static float bg_frame_cache = 0;
@@ -52,4 +56,15 @@ void menu::tick(u32 ms, scene_uid)
     }
 
     glass_frame_transition_progress = glass_waiting ? 0.0f : glass_frame_cache;
+
+
+    if(!black_scene_transition_done) {
+        static size_t time = 0;
+        time += ms;
+        black_scene_transition = time * 1.0f / black_scene_transition_time;
+        if(time > black_scene_transition_time) {
+            black_scene_transition_done = true;
+            black_scene_transition = 1.0f;
+        }
+    }
 }

@@ -66,5 +66,13 @@ void menu::render(scene_uid)
         SDL_RenderCopy(rnd, tex, nullptr, &area);
     }
 
+
+    if(!black_scene_transition_done) {
+        SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255 * (1 - black_scene_transition));
+        SDL_RenderFillRect(rnd, nullptr);
+        SDL_SetRenderDrawBlendMode(rnd, SDL_BLENDMODE_NONE);
+    }
+
     SDL_RenderPresent(rnd);
 }

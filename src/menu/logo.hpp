@@ -45,4 +45,9 @@ namespace menu
     constexpr auto game_scene = "game";
 
     bool init_next(); // return if there's more to init
+
+
+    extern bool black_scene_transition_done;
+    extern float black_scene_transition;
+    constexpr size_t black_scene_transition_time = 500; // ms
 }
