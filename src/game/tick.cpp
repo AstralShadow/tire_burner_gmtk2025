@@ -16,9 +16,12 @@ static constexpr bool debug_log = false;
 static constexpr bool debug_log = false;
 #endif
 
+float game::start_transition = 0;
+bool game::start_transition_done = false;
 
 namespace game
 {
+    static void scene_transition(u32 ms);
     static void move_cars(u32 ms);
     static void prevent_crashes(u32 ms);
     static void decrease_timeouts(u32 ms);
@@ -28,10 +31,25 @@ namespace game
 
 void game::tick(u32 ms, scene_uid)
 {
+    if(!start_transition_done)
+        scene_transition(ms);
     move_cars(ms);
     prevent_crashes(ms);
     decrease_timeouts(ms);
     move_particles(ms);
+}
+
+
+void game::scene_transition(u32 ms)
+{
+    static size_t time = 0;
+    time += ms;
+
+    start_transition = time * 1.0f / start_transition_time;
+    if(time > start_transition_time) {
+        start_transition = 1.0f;
+        start_transition_done = true;
+    }
 }
 
 

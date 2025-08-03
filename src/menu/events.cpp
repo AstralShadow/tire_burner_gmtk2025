@@ -27,15 +27,15 @@ void menu::keydown(SDL_KeyboardEvent& ev, scene_uid)
     }
 }
 
-void menu::mouseup(SDL_MouseButtonEvent&, scene_uid)
-{
-
-}
-
-void menu::mousedown(SDL_MouseButtonEvent& ev, scene_uid)
+void menu::mouseup(SDL_MouseButtonEvent& ev, scene_uid)
 {
     if(point_in_play_btn({ev.x, ev.y}))
         core::set_scene(game_scene);
+}
+
+void menu::mousedown(SDL_MouseButtonEvent&, scene_uid)
+{
+
 }
 
 void menu::mouse_motion(SDL_MouseMotionEvent& ev, scene_uid)

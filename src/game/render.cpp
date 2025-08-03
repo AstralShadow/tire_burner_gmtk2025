@@ -5,6 +5,7 @@
 #include "utils/pi.hpp"
 #include "utils/fonts.hpp"
 #include "utils/textures.hpp"
+#include "menu/menu.hpp"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 #include <map>
@@ -34,6 +35,8 @@ static auto& rnd = core::renderer;
 
 namespace game
 {
+    static void render_scene_transition();
+
     static void render_track();
     static void render_cars();
 
@@ -62,7 +65,10 @@ void game::render(scene_uid)
 
     render_profit_particles();
 
-    SDL_RenderPresent(rnd);
+    if(!start_transition_done) // the other scene's render has a RenderPresent call
+        render_scene_transition();
+    else 
+        SDL_RenderPresent(rnd);
 }
 
 
@@ -547,4 +553,18 @@ void game::render_track_buttons()
 
         SDL_RenderCopy(rnd, final_stats_texture, nullptr, &dest2);
     }
+}
+
+
+void game::render_scene_transition()
+{
+    SDL_Rect area {
+        0, static_cast<int>(-720 * start_transition),
+        1024, 720
+    };
+    SDL_RenderSetViewport(rnd, &area);
+
+    menu::render();
+
+    SDL_RenderSetViewport(rnd, nullptr);
 }

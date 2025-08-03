@@ -12,6 +12,11 @@ using std::vector;
 
 namespace game
 {
+    extern bool start_transition_done;
+    extern float start_transition;
+    constexpr size_t start_transition_time = 700;
+
+
     enum TrackEnum : u8;
 
     constexpr array<SDL_Rect, 4> new_car_buttons { SDL_Rect
