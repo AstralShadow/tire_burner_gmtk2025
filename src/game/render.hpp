@@ -76,6 +76,6 @@ namespace game
     constexpr SDL_Color last_track_notice_color {255, 255, 255, 255};
 
 
-    constexpr auto menu_track_overlay = "assets/menu/track_overlay.png";
-    constexpr auto text_box_path = "assets/menu/text_box.png";
+    constexpr auto menu_track_overlay = "assets/ui/track_overlay.png";
+    constexpr auto text_box_path = "assets/ui/text_box.png";
 }

@@ -26,7 +26,7 @@ void startup::render(scene_uid)
         auto font = get_font(game::FT_DEFAULT, 40);
         SDL_Color color {255, 255, 255, 255};
 
-        string text = "Created in 96h for:";
+        string text = "Created in 4 days for:";
         auto length = text.size();
         auto first = 0;
 

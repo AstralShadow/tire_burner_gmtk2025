@@ -21,3 +21,19 @@ void startup::keydown(SDL_KeyboardEvent& ev, scene_uid)
     if(scancode == SDL_SCANCODE_RETURN)
         core::set_scene(next_scene);
 }
+
+void startup::keyup(SDL_KeyboardEvent&, scene_uid)
+{
+
+}
+
+
+void startup::mousedown(SDL_MouseButtonEvent&, scene_uid)
+{
+
+}
+
+void startup::mouseup(SDL_MouseButtonEvent&, scene_uid)
+{
+
+}

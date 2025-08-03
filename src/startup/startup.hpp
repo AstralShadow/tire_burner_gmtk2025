@@ -1,9 +1,10 @@
-#ifndef INCLUDE_GAME_STARTUP_HPP
-#define INCLUDE_GAME_STARTUP_HPP
+#pragma once
 
 #include "utils/types.hpp"
 
 struct SDL_KeyboardEvent;
+struct SDL_MouseButtonEvent;
+
 
 namespace startup
 {
@@ -16,6 +17,8 @@ namespace startup
     void render(scene_uid = 0);
 
     void keydown(SDL_KeyboardEvent&, scene_uid = 0);
-}
+    void keyup(SDL_KeyboardEvent&, scene_uid = 0);
 
-#endif // INCLUDE_GAME_STARTUP_HPP
+    void mousedown(SDL_MouseButtonEvent&, scene_uid = 0);
+    void mouseup(SDL_MouseButtonEvent&, scene_uid = 0);
+}

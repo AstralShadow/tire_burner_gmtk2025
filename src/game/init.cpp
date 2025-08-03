@@ -20,8 +20,8 @@ void game::init(int, char**, scene_uid)
     cars.reserve(50);
 
 #ifndef __EMSCRIPTEN__
-    //tires = 5000;
-    //total_tires = 5000;
+    tires = 5000;
+    total_tires = 5000;
 #endif
 }
 
